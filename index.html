@@ -230,6 +230,11 @@
       <div id="accelerometer" class="doublegraph"></div>
     </div>
 
+    <div class="double widget">
+      <div class="label">&#128640; Accelerometer</div>
+      <div id="Forcepad" class="doublegraph"></div>
+    </div>
+
     <div class="square widget">
       <div class="label">&#128171; Gyroscope</div>
       <div class="label" id="gyroscope-value"></div>
@@ -327,6 +332,13 @@
       properties: ['BLENotify'],
       structure: ['Float32', 'Float32', 'Float32'],
       data: { 'Ax': [], 'Ay': [], 'Az': [] }
+    },
+    Forcepad:
+    {
+      uuid: '19b10000-10001-537e-4f6c-d104768a1214',
+      properties: ['BLENotify'],
+      structure: ['Float32', 'Float32'],
+      data: { 'F1': [], 'F2': []}
     },
     gyroscope:
     {
@@ -586,11 +598,11 @@
       plot_bgcolor: '#111111',
       paper_bgcolor: '#111111',
       margin: { l: 8, r: 8, b: 18, t: 18 },
-      showlegend: false,
-      yaxis: { 'showticklabels': false },
+      showlegend: true,
+      yaxis: { 'showticklabels': true },
       xaxis: {
         'range': [0, maxRecords],
-        'showticklabels': false,
+        'showticklabels': true,
         'autorange': false,
         'showgrid': true,
         'zeroline': true,
@@ -740,6 +752,7 @@
     }
     if (skip_frame == false) { // TODO update with fuction to iterate object with viz function as a property
       updateViz('accelerometer', [graph]);
+      updateViz('Forcepad', [graph]);
       updateViz('gyroscope', [graph]);
       updateViz('temperature', [digit, graph]);
       updateViz('humidity', [digit, graph]);
@@ -758,6 +771,7 @@
 
   initGraph('gyroscope');
   initGraph('accelerometer');
+  initGraph('Forcepad');
   initGraph('temperature');
   initGraph('humidity');
   initGraph('pressure');
