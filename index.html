@@ -442,11 +442,7 @@
     msg('requesting device ...');
 
     const device = await navigator.bluetooth.requestDevice({
-      filters: [
-        {
-          name: 'NiclaSenseME-81B8'
-        }
-      ]
+     services: [SERVICE_UUID] // SERVICE_UUID
     });
 
     msg('connecting to device ...');
