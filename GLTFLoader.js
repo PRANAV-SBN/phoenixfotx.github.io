@@ -669,7 +669,7 @@ THREE.GLTFLoader = ( function () {
 				delete uniforms.metalnessMap;
 
 				uniforms.specular = { value: new THREE.Color().setHex( 0x111111 ) };
-				uniforms.glossiness = { value: 0.8 };
+				uniforms.glossiness = { value: 0.5 };
 				uniforms.specularMap = { value: null };
 				uniforms.glossinessMap = { value: null };
 
