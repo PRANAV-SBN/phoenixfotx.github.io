@@ -230,17 +230,18 @@
       <div id="accelerometer" class="doublegraph"></div>
     </div>
 
-    <div class="double widget">
-      <div class="label">&#128640; Forcepad</div>
-      <div id="Forcepad" class="doublegraph"></div>
-    </div>
-
     <div class="square widget">
       <div class="label">&#128171; Gyroscope</div>
       <div class="label" id="gyroscope-value"></div>
       <div id="gyroscope" class="graph"></div>
     </div>
 
+    <div class="square widget">
+      <div class="label">&#128171; Forcepad</div>
+      <div class="label" id="forcepad-values"></div>
+      <div id="gyroscope" class="graph"></div>
+    </div>
+    
     <div class="square widget">
       <div class="label">&#128161; RGB LED control</div>
       <div id="color-picker-container" class="graph"></div>
@@ -333,13 +334,7 @@
       structure: ['Float32', 'Float32', 'Float32'],
       data: { 'Ax': [], 'Ay': [], 'Az': [] }
     },
-    Forcepad:
-    {
-      uuid: '19b10000-10001-537e-4f6c-d104768a1214',
-      properties: ['BLENotify'],
-      structure: ['Float32', 'Float32'],
-      data: { 'F1': [], 'F2': []}
-    },
+    
     gyroscope:
     {
       uuid: '19b10000-6001-537e-4f6c-d104768a1214',
@@ -362,6 +357,13 @@
       data: { 'x': [], 'y': [], 'z': [], 'w': [] },
       writeBusy: false, // we need to track this to avoid 'GATT operation in progress' errors
       writeValue: null
+    },
+    Forcepad:
+    {
+      uuid: '19b10000-10001-537e-4f6c-d104768a1214',
+      properties: ['BLENotify'],
+      structure: ['Float32', 'Float32'],
+      data: { 'F1': [], 'F2': []}
     },
     bsec:
     {
@@ -752,7 +754,6 @@
     }
     if (skip_frame == false) { // TODO update with fuction to iterate object with viz function as a property
       updateViz('accelerometer', [graph]);
-      updateViz('Forcepad', [graph]);
       updateViz('gyroscope', [graph]);
       updateViz('temperature', [digit, graph]);
       updateViz('humidity', [digit, graph]);
@@ -761,6 +762,7 @@
       updateViz('co2', [digit, graph]);
       updateViz('gas', [digit, graph]);
       updateViz('quaternion', [update3d]);
+      updateViz('Forcepad', [graph]);
 
       //bytes();  //Get the total amount of bytes received
 
@@ -771,16 +773,16 @@
 
   initGraph('gyroscope');
   initGraph('accelerometer');
-  initGraph('Forcepad');
   initGraph('temperature');
   initGraph('humidity');
   initGraph('pressure');
   initGraph('bsec');
   initGraph('co2');
   initGraph('gas');
-
   init3D();
+  initGraph('Forcepad');
   requestAnimationFrame(draw);
+
 
 </script>
 
