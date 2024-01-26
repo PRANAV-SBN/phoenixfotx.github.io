@@ -1,3 +1,5 @@
+
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -211,7 +213,7 @@
     <div class="status widget">
       <button id="pairButton">CONNECT</button>
       <div class="label statusBar" id="bluetooth">Click the connect button to connect your device</div>
-      
+      <img src="Logo-Arduino-Pro-inline.svg" style="position: inherit;padding-right: 0px;filter: invert(100%);float: right; grid-column: 3; width: 80%; margin-top: 8.5%;" />
     </div>
 
     <div class="square widget" id="3d">
@@ -226,11 +228,6 @@
     <div class="double widget">
       <div class="label">&#128640; Accelerometer</div>
       <div id="accelerometer" class="doublegraph"></div>
-    </div>
-
-    <div class="double widget">
-      <div class="label">&#128076; Forcepad</div>
-      <div id="Forcepad" class="doublegraph"></div>
     </div>
 
     <div class="square widget">
@@ -310,14 +307,6 @@
       structure: ['Float32'],
       data: { temperature: [] }
     },
-
-    Forcepad:
-    {
-      uuid: '19b10000-10001-537e-4f6c-d104768a1214',
-      properties: ['BLENotify'],
-      structure: ['Float32', 'Float32'],
-      data: { 'F1': [], 'F2': []}
-    },
     humidity:
     {
       uuid: '19b10000-3001-537e-4f6c-d104768a1214',
@@ -394,16 +383,12 @@
   const pairButton = document.getElementById('pairButton');
   const BLEstatus = document.getElementById('bluetooth');
 
-  //snack('IMPORTANT - first upload the sketch to your Arduino Nicla Sense ME &nbsp;&nbsp; <a href="https://create.arduino.cc/editor/FT-CONTENT/333e2e07-ecc4-414c-bf08-005b611ddd75/preview">OPEN</a>', 1)
- 
-
+  snack('IMPORTANT - first upload the sketch to your Arduino Nicla Sense ME &nbsp;&nbsp; <a href="https://create.arduino.cc/editor/FT-CONTENT/333e2e07-ecc4-414c-bf08-005b611ddd75/preview">OPEN</a>', 1)
+  
   if ("bluetooth" in navigator) {
     pairButton.addEventListener('click', function (event) {
       connect();
     });
-
- 
-
     // else the browser doesn't support bluetooth
   } else {
     msg("browser not supported"); /*pairButton.style.backgroundColor = "red";*/
@@ -441,7 +426,7 @@
     const device = await navigator.bluetooth.requestDevice({
       filters: [
         {
-          name: 'NiclaSenseME-81B8'
+          services: [SERVICE_UUID] // SERVICE_UUID
         }
       ]
     });
@@ -755,7 +740,6 @@
     }
     if (skip_frame == false) { // TODO update with fuction to iterate object with viz function as a property
       updateViz('accelerometer', [graph]);
-      updateViz('Forcepad', [graph]);
       updateViz('gyroscope', [graph]);
       updateViz('temperature', [digit, graph]);
       updateViz('humidity', [digit, graph]);
@@ -774,7 +758,6 @@
 
   initGraph('gyroscope');
   initGraph('accelerometer');
-  initGraph('Forcepad');
   initGraph('temperature');
   initGraph('humidity');
   initGraph('pressure');
