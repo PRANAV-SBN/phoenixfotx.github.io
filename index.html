@@ -1,7 +1,7 @@
 <html>
 
 <head>
-  <title> GAP - 1 DASHBOARD </title>
+  <title>Arduino Nicla Sense ME - Web BLE test</title>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto Mono' rel='stylesheet'>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -311,6 +311,13 @@
       data: { temperature: [] }
     },
 
+    Forcepad:
+    {
+      uuid: '19b10000-10001-537e-4f6c-d104768a1214',
+      properties: ['BLENotify'],
+      structure: ['Float32', 'Float32'],
+      data: { 'F1': [], 'F2': []}
+    },
     humidity:
     {
       uuid: '19b10000-3001-537e-4f6c-d104768a1214',
@@ -338,17 +345,7 @@
       properties: ['BLENotify'],
       structure: ['Float32', 'Float32', 'Float32'],
       data: { 'x': [], 'y': [], 'z': [] }
-    },    
-    Forcepad:
-    {
-      uuid: '19b10000-10001-537e-4f6c-d104768a1214',
-      properties: ['BLENotify'],
-      structure: ['Float32', 'Float32'],
-      data: { 'F1': [], 'F2': []}
-      writeBusy: false, // we need to track this to avoid 'GATT operation in progress' errors
-      writeValue: null
     },
-    
     led: {
       uuid: '19b10000-8001-537e-4f6c-d104768a1214',
       properties: ['BLEWrite'],
@@ -442,7 +439,11 @@
     msg('requesting device ...');
 
     const device = await navigator.bluetooth.requestDevice({
-     services: [SERVICE_UUID] // SERVICE_UUID
+      filters: [
+        {
+          name: 'NiclaSenseME-81B8'
+        }
+      ]
     });
 
     msg('connecting to device ...');
