@@ -652,7 +652,7 @@
         arduinoModel.add(ledObject);
         arduinoModel.add(ledLight);
 
-        arduinoModel.rotation.x = 45 * (Math.PI/180);  // Show the bottom side of the board by default
+        arduinoModel.rotation.x = 90 * (Math.PI/180);  // Show the bottom side of the board by default
         
         var sphereSize = 1;
 
@@ -668,8 +668,8 @@
         scene.add(hemiLight);
 
         // Camera
-        camera.position.set(0, 25, 5);
-        camera.rotation.y = Math.PI; // 180
+        camera.position.set(0, 25, 0);
+        camera.rotation.y = 90 * Math.PI; // 180
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         renderer.render(scene, camera);
       }
