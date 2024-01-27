@@ -3,7 +3,7 @@
 <html>
 
 <head>
-  <title>Arduino Nicla Sense ME - Web BLE test</title>
+  <title> GAP 1 Dashboard</title>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto Mono' rel='stylesheet'>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -652,7 +652,8 @@
         arduinoModel.add(ledObject);
         arduinoModel.add(ledLight);
 
-        arduinoModel.rotation.x = 90 * (Math.PI/180);  // Show the bottom side of the board by default
+        arduinoModel.rotation.x = (Math.PI/180);  // Show the bottom side of the board by default
+        arduinoModel.rotation.y = 90 * (Math.PI/180);  
         
         var sphereSize = 1;
 
