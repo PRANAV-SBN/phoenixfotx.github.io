@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 <html>
-<!--hello -->
+
 <head>
   <title>Arduino Nicla Sense ME - Web BLE test</title>
 
@@ -209,12 +209,6 @@
 
   <div class="container">
 
-    <div class="widget">
-      <div class="label">Received Data:</div>
-      <input type="text" id="sendData" readonly style="width: 80%;">
-    </div>
-
-
     <div id="snackbar"></div>
     <div class="status widget">
       <button id="pairButton">CONNECT</button>
@@ -385,21 +379,12 @@
       structure: ['Uint32'],
       data: { 'co2': [] }
     },
-    receiveddata:
-      {
-        uuid:'19b10000-8002-537e-4f6c-d104768a1214',
-        properties: ['BLERead'],
-        structure: ['Text'],
-        data: {'sendData':[]}
-      },
     gas:
     {
       uuid: '19b10000-9003-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Uint32'],
       data: { 'gas': [] }
-    }
-      
     }
   }
 
@@ -502,10 +487,10 @@
       "Uint16": { fn: DataView.prototype.getUint16, bytes: 2 },
       "Uint32": { fn: DataView.prototype.getUint32, bytes: 4 },
       "Int16": { fn: DataView.prototype.getInt16, bytes: 2 },
-      "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 },
-      "String": { fn: decodeString, bytes: 20 }
+      "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 }
     };
     var packetPointer = 0, i = 0;
+
     // Read each sensor value in the BLE packet and push into the data array
     sensor.structure.forEach(function (dataType) {
       // Lookup function to extract data for given sensor property type
@@ -683,7 +668,7 @@
         scene.add(hemiLight);
 
         // Camera
-        camera.position.set(0, 0, 0);
+        camera.position.set(0, 25, 0);
         camera.rotation.y = Math.PI; // 180
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         renderer.render(scene, camera);
@@ -726,7 +711,6 @@
     const div = document.getElementById(sensor + "-value");
     if (!Number.isNaN(value)) { div.innerHTML = Math.round(value * 10) / 10; };
   }
-  
 
   function update3d(sensor) {
   
@@ -779,7 +763,6 @@
       updateViz('gas', [digit, graph]);
       updateViz('quaternion', [update3d]);
       updateViz('Forcepad', [graph]);
-      updateViz('receiveddata',[digit,widget]);
 
       //bytes();  //Get the total amount of bytes received
 
@@ -797,7 +780,6 @@
   initGraph('co2');
   initGraph('gas');
   init3D();
-  initGraph('receiveddata');
   initGraph('Forcepad');
   requestAnimationFrame(draw);
 
