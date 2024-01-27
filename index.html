@@ -290,6 +290,19 @@
       <div class="shortgraph" id="gas"></div>
     </div>
 
+    <!-- Input field to send data -->
+    <div class="widget">
+      <label for="sendData">Send Data:</label>
+      <input type="text" id="sendData" placeholder="Enter data to send">
+      <button onclick="sendData()">Send</button>
+    </div>
+
+    <!-- Display received data -->
+    <div class="widget">
+      <label>Received Data:</label>
+      <div id="receivedData"></div>
+    </div>
+
   </div>
 </body>
 
@@ -384,7 +397,13 @@
       uuid: '19b10000-9003-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Uint32'],
-      data: { 'gas': [] }
+      data: { 'gas': [] },
+    receiveddata:
+    {
+      uuid: '19b10000-8002-537e-4f6c-d104768a1214',
+      properties: ['BLERead'],
+      structure: ['String'],
+      data: { 'sendData': [] }
     }
   }
 
@@ -531,7 +550,18 @@
     ledLight.color.setRGB(255,0,0);
     ledMaterial.color.setRGB(255,0,0);
   }
+  
+      // Function to handle sending data
+  function sendData() {
+    const dataToSend = document.getElementById('sendData').value;
+      // Add code to send data to Arduino, e.g., NiclaSenseME['yourSensor'].writeValue = dataToSend;
+  }
 
+    // Function to handle displaying received data
+  function displayReceivedData(data) {
+      document.getElementById('receivedData').innerHTML = data;
+  }
+  displayReceivedData('receiveddata');
   function BLEwriteTo(sensor) {
     if (NiclaSenseME[sensor].writeBusy) return; // dropping writes when one is in progress instead of queuing as LED is non-critical / realtime
     NiclaSenseME[sensor].writeBusy = true; // Ensure no write happens when GATT operation in progress
