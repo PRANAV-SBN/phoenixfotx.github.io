@@ -214,11 +214,6 @@
       <input type="text" id="sendData" readonly style="width: 80%;">
     </div>
 
-    <div class="widget">
-      <div class="label">Send Data:</div>
-      <input type="text" id="sendData" style="width: 60%;">
-      <button onclick="sendData()">Send</button>
-    </div>
 
     <div id="snackbar"></div>
     <div class="status widget">
@@ -731,6 +726,7 @@
     const div = document.getElementById(sensor + "-value");
     if (!Number.isNaN(value)) { div.innerHTML = Math.round(value * 10) / 10; };
   }
+  
 
   function update3d(sensor) {
   
@@ -783,7 +779,7 @@
       updateViz('gas', [digit, graph]);
       updateViz('quaternion', [update3d]);
       updateViz('Forcepad', [graph]);
-      updateViz('receiveddata',[widget]);
+      updateViz('receiveddata',[digit,widget]);
 
       //bytes();  //Get the total amount of bytes received
 
@@ -801,6 +797,7 @@
   initGraph('co2');
   initGraph('gas');
   init3D();
+  initGraph('receiveddata');
   initGraph('Forcepad');
   requestAnimationFrame(draw);
 
