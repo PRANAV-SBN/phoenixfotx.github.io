@@ -540,7 +540,7 @@
       const controlBytes = new TextEncoder().encode(control);
     
       // Concatenate the Uint8Array values
-      const ControlData = new Uint8Array([...CmdBytes, ...controlBytes]);
+      const ControlData = new Uint8Array([...CmdBytes, ';'.charCodeAt(0), ...controlBytes]);
     
       // Send the data to Nicla Sense ME
       NiclaSenseME.control.characteristic.writeValue(ControlData)
