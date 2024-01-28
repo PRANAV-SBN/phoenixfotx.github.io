@@ -519,7 +519,7 @@
     const genderBytes = new TextEncoder().encode(gender);
   
     // Concatenate the Uint8Array values
-    const userData = new Uint8Array([...nameBytes,';', ...ageBytes,';', ...genderBytes]);
+    const userData = new Uint8Array([...nameBytes, ';', ...ageBytes, ';', ...genderBytes]);
   
     // Send the data to Nicla Sense ME
     NiclaSenseME.userData.characteristic.writeValue(userData)
