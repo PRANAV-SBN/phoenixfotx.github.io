@@ -391,7 +391,7 @@
       uuid: '19b10000-8002-537e-4f6c-d104768a1214',
       properties: ['BLENotify'],
       structure: ['String'],
-      data: { 'text': [] }
+      data: { 'sendData': [] }
     },
   }
 
@@ -593,7 +593,7 @@
   // Graphing
   const colors = ["#FF355E", "#FD5B20", "#FF6037", "#FF9966", "#FF9933", "#FFCC33", "#FFFF66", "#FFFF66", "#CCFF00", "#66FF66", "#AAF0D1", "#50BFE6", "#FF6EFF", "#EE34D2", "#FF00CC", "#FF00CC"];
   var colorIndex = 0;
-  snack(NiclaSenseME['receiveData'].data.text.latest(),1);
+  snack(NiclaSenseME['receiveData'].data.sendData.latest(),1);
   function initGraph(sensor) {
     var title = sensor;
     var series = Object.keys(NiclaSenseME[sensor].data);
