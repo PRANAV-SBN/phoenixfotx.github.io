@@ -289,23 +289,8 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
-    <div class="widget">
-      <label for="participantName">Participant Name:</label>
-      <input type="text" id="participantName" placeholder="Enter participant name">
-
-      <label for="age">Age:</label>
-      <input type="number" id="age" placeholder="Enter age">
-
-      <label for="gender">Gender:</label>
-      <select id="gender">
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-      </select>
-            <!-- Button to collect data -->
-      <button id="sendDataButton">Collect Data</button>
-    </div>
-
+  <input type="text" id="inputString" placeholder="Participant">
+  <button id="sendStringButton">Collect Data</button>
   </div>
 </body>
 
@@ -451,34 +436,10 @@
     setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-    const participantNameElement = document.getElementById('participantName');
-    const ageElement = document.getElementById('age');
-    const genderElement = document.getElementById('gender');
-    const sendDataButton = document.getElementById('sendDataButton');
-
-    sendDataButton.addEventListener('click', function () {
-      const participantName = participantNameElement.value;
-      const age = ageElement.value;
-      const gender = genderElement.value;
-
-      if (participantName && age && gender) {
-        // Create an object with the collected data
-        const dataObject = {
-          participantName: participantName,
-          age: age,
-          gender: gender
-        };
-
-        // Convert the data object to a JSON string and send it to the Nicla Sense ME device
-        const jsonData = JSON.stringify(dataObject);
-        const dataValue = new TextEncoder().encode(jsonData);
-
-        NiclaSenseME.receivedString.writeValue = dataValue;
-        BLEwriteTo('receivedString');
-      } else {
-        alert('Please fill in all fields before collecting data.');
-      }
-    });
+  function updateReceivedString() {
+    const value = NiclaSenseME.receivedString.data.receivedString.latest();
+    const div = document.getElementById('received-string-value');
+    div.innerHTML = value;
   }
   function hideSnack() {
     snackBar = document.getElementById("snackbar");
