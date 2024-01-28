@@ -391,15 +391,17 @@
       structure: ['Uint32'],
       data: { 'gas': [] }
     },
+    receivedString:
+      {
+        uuid: '19b10000-8002-537e-4f6c-d104768a1214',
+        properties: ['BLERead'],
+        structure: ['String'],
+        data: { 'receivedString': [] }
+      },
     
   }
   
-  NiclaSenseME.receivedString = {
-  uuid: '19b10000-8002-537e-4f6c-d104768a1214',
-  properties: ['BLERead'],
-  structure: ['String'],
-  data: { 'receivedString': [] }
-  };
+
   const sensors = Object.keys(NiclaSenseME);
   const SERVICE_UUID = '19b10000-0000-537e-4f6c-d104768a1214';
   var bytesReceived = 0;
