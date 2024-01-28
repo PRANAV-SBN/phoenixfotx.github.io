@@ -385,7 +385,14 @@
       properties: ['BLERead'],
       structure: ['Uint32'],
       data: { 'gas': [] }
-    }
+    },
+    receiveData:
+    {
+      uuid: '19b10000-8002-537e-4f6c-d104768a1214',
+      properties: ['BLENotify'],
+      structure: ['String'],
+      data: { 'text': [] }
+    },
   }
 
   const sensors = Object.keys(NiclaSenseME);
@@ -487,7 +494,13 @@
       "Uint16": { fn: DataView.prototype.getUint16, bytes: 2 },
       "Uint32": { fn: DataView.prototype.getUint32, bytes: 4 },
       "Int16": { fn: DataView.prototype.getInt16, bytes: 2 },
-      "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 }
+      "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 },
+      "String": { fn: (dataView, offset) => {
+                  const length = dataView.getUint8(offset);
+                  offset += 1;
+                  const stringValue = String.fromCharCode(...new Array(length).fill(0).map((_, i) => dataView.getUint8(offset + i)));
+                  return { value: stringValue, bytes: length + 1 };
+                  }, bytes: -1 } // Use -1 to indicate variable length
     };
     var packetPointer = 0, i = 0;
 
@@ -583,6 +596,7 @@
   function initGraph(sensor) {
     var title = sensor;
     var series = Object.keys(NiclaSenseME[sensor].data);
+    series = series.filter(item => item !== receiveData);
     var format = [];
     series.forEach(function (item) {
       colorIndex++;
@@ -764,7 +778,7 @@
       updateViz('gas', [digit, graph]);
       updateViz('quaternion', [update3d]);
       updateViz('Forcepad', [graph]);
-
+      snack(NiclaSenseME['receiveData'].data.text.latest(),1);
       //bytes();  //Get the total amount of bytes received
 
       skip_frame = true; // render alternate frames = 30fps
@@ -783,7 +797,7 @@
   init3D();
   initGraph('Forcepad');
   requestAnimationFrame(draw);
-
+  snack(NiclaSenseME['receiveData'].data.text.latest(),1);
 
 </script>
 
