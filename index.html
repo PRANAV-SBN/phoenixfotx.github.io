@@ -341,7 +341,7 @@
     </div>
     <div class="widget">
       <form id="controlForm">
-        <label for="name">Cmd:</label>
+        <label for="Cmd">Cmd:</label>
         <input type="text" id="Cmd" name="Cmd" required>
         <label for="control">Control:</label>
         <select id="control" name="control" required>
@@ -349,7 +349,7 @@
           <option value="Pause">Pause</option>
           <option value="Stop">Stop</option>
         </select>
-        <button type="button" onclick="sendUserData()">Collect Data</button>
+        <button type="button" onclick="sendControlData()">Send Instruction</button>
       </form>
     </div>
   </div>
@@ -460,6 +460,12 @@
       structure: ['String'],
       data: { 'message': [] }
     },
+    control: {
+      uuid: '19b10000-9007-537e-4f6c-d104768a1214', // Use a unique UUID for your characteristic
+      properties: ['BLEWriteWite'],
+      structure: ['Uint8'],
+      characteristic: null
+    },
     
   }
   
@@ -524,6 +530,27 @@
         console.error('Error sending user data:', error);
       });
   }
+    function sendControlData() {
+      // Get user input values
+      const Cmd = document.getElementById('Cmd').value;
+      const control = document.getElementById('control').value;
+    
+      // Convert string values to Uint8Array
+      const CmdBytes = new TextEncoder().encode(Cmd);
+      const controlBytes = new TextEncoder().encode(control);
+    
+      // Concatenate the Uint8Array values
+      const ControlData = new Uint8Array([...CmdBytes, ...controlBytes]);
+    
+      // Send the data to Nicla Sense ME
+      NiclaSenseME.control.characteristic.writeValue(ControlData)
+        .then(_ => {
+          console.log('Control data sent successfully.');
+        })
+        .catch(error => {
+          console.error('Error sending Control data:', error);
+        });
+    }
   function handleReceivedMessage(dataReceived) {
     const message = new TextDecoder().decode(dataReceived);
     document.getElementById('received-message').innerHTML = message;
@@ -574,6 +601,9 @@
         
       }
       if (sensor === 'userData') {
+        NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
+      }
+      if (sensor === 'control') {
         NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
       }
       NiclaSenseME.receivedMessage.characteristic = await service.getCharacteristic(NiclaSenseME.receivedMessage.uuid);
