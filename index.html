@@ -550,6 +550,7 @@
         .catch(error => {
           console.error('Error sending Control data:', error);
         });
+      document.getElementById("Cmd").value = "";
     }
   function handleReceivedMessage(dataReceived) {
     const message = new TextDecoder().decode(dataReceived);
