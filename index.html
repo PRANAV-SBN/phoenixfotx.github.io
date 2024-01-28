@@ -289,8 +289,23 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
-  <input type="text" id="inputString" placeholder="Participant">
-  <button id="sendStringButton">Collect Data</button>
+    <div class="widget">
+      <label for="participantName">Participant Name:</label>
+      <input type="text" id="participantName" placeholder="Enter participant name">
+
+      <label for="age">Age:</label>
+      <input type="number" id="age" placeholder="Enter age">
+
+      <label for="gender">Gender:</label>
+      <select id="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+            <!-- Button to collect data -->
+      <button id="sendDataButton">Collect Data</button>
+    </div>
+
   </div>
 </body>
 
