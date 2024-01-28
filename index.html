@@ -451,10 +451,34 @@
     setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-  function updateReceivedString() {
-    const value = NiclaSenseME.receivedString.data.receivedString.latest();
-    const div = document.getElementById('received-string-value');
-    div.innerHTML = value;
+    const participantNameElement = document.getElementById('participantName');
+    const ageElement = document.getElementById('age');
+    const genderElement = document.getElementById('gender');
+    const sendDataButton = document.getElementById('sendDataButton');
+
+    sendDataButton.addEventListener('click', function () {
+      const participantName = participantNameElement.value;
+      const age = ageElement.value;
+      const gender = genderElement.value;
+
+      if (participantName && age && gender) {
+        // Create an object with the collected data
+        const dataObject = {
+          participantName: participantName,
+          age: age,
+          gender: gender
+        };
+
+        // Convert the data object to a JSON string and send it to the Nicla Sense ME device
+        const jsonData = JSON.stringify(dataObject);
+        const dataValue = new TextEncoder().encode(jsonData);
+
+        NiclaSenseME.receivedString.writeValue = dataValue;
+        BLEwriteTo('receivedString');
+      } else {
+        alert('Please fill in all fields before collecting data.');
+      }
+    });
   }
   function hideSnack() {
     snackBar = document.getElementById("snackbar");
