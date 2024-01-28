@@ -290,6 +290,11 @@
       <div class="shortgraph" id="gas"></div>
     </div>
 
+    <div class="square widget">
+      <div class="label">&#128227; Received String Data</div>
+      <div class="label" id="received-string-value"></div>
+    </div>
+
   </div>
 </body>
 
@@ -386,12 +391,12 @@
       structure: ['Uint32'],
       data: { 'gas': [] }
     },
-    receiveData:
+    receiveString:
     {
       uuid: '19b10000-8002-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['String'],
-      data: { 'sendData': [] }
+      data: { 'receivedString': [] }
     },
   }
 
@@ -432,7 +437,11 @@
     setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-
+  function updateReceivedString() {
+    const value = NiclaSenseME.receivedString.data.receivedString.latest();
+    const div = document.getElementById('received-string-value');
+    div.innerHTML = value;
+  }
   function hideSnack() {
     snackBar = document.getElementById("snackbar");
     snackBar.style.visibility = "hidden";
@@ -468,6 +477,10 @@
         NiclaSenseME[sensor].characteristic.addEventListener('characteristicvaluechanged', function (event) { handleIncoming(NiclaSenseME[sensor], event.target.value); });
         await NiclaSenseME[sensor].characteristic.startNotifications();
       }
+      NiclaSenseME.receivedString.characteristic.addEventListener('characteristicvaluechanged', function (event) {
+        handleIncoming(NiclaSenseME.receivedString, event.target.value);
+      });
+      await NiclaSenseME.receivedString.characteristic.startNotifications();
       // Set up polling for read
       if (NiclaSenseME[sensor].properties.includes("BLERead")) {
         NiclaSenseME[sensor].polling = setInterval(function () {
@@ -475,7 +488,11 @@
         }
           , 500);
       }
-
+      NiclaSenseME.receivedString.polling = setInterval(function () {
+        NiclaSenseME.receivedString.characteristic.readValue().then(function (data) {
+          handleIncoming(NiclaSenseME.receivedString, data);
+        });
+      }, 500);
       NiclaSenseME[sensor].rendered = false;
     }
     pairButton.style.backgroundColor = 'green';
@@ -778,7 +795,7 @@
       updateViz('gas', [digit, graph]);
       updateViz('quaternion', [update3d]);
       updateViz('Forcepad', [graph]);
-   
+      updateViz('receivedString', [updateReceivedString]); 
       //bytes();  //Get the total amount of bytes received
 
       skip_frame = true; // render alternate frames = 30fps
