@@ -289,8 +289,24 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
-  <input type="text" id="inputString" placeholder="Participant">
-  <button id="sendStringButton">Collect Data</button>
+    <div class="widget">
+    <form id="userDataForm">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+      <br>
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" required>
+      <br>
+      <label for="gender">Gender:</label>
+      <select id="gender" name="gender" required>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+      <br>
+      <button type="button" onclick="sendUserData()">Send Data</button>
+    </form>
+  </div>
   </div>
 </body>
 
@@ -387,13 +403,11 @@
       structure: ['Uint32'],
       data: { 'gas': [] }
     },
-  receivedString: {
+  userData: {
       uuid: '19b10000-9005-537e-4f6c-d104768a1214', // Use a unique UUID for your characteristic
-      properties: ['BLEWriteWithoutResponse'],
+      properties: ['BLEWriteWite'],
       structure: ['Uint8'],
-      data: { 'receivedString': [] },
-      writeBusy: false,
-      writeValue: null
+      characteristic: null
     },
     
   }
@@ -436,10 +450,28 @@
     setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-  function updateReceivedString() {
-    const value = NiclaSenseME.receivedString.data.receivedString.latest();
-    const div = document.getElementById('received-string-value');
-    div.innerHTML = value;
+  function sendUserData() {
+    // Get user input values
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+  
+    // Convert string values to Uint8Array
+    const nameBytes = new TextEncoder().encode(name);
+    const ageBytes = new TextEncoder().encode(age);
+    const genderBytes = new TextEncoder().encode(gender);
+  
+    // Concatenate the Uint8Array values
+    const userData = new Uint8Array([...nameBytes, ...ageBytes, ...genderBytes]);
+  
+    // Send the data to Nicla Sense ME
+    NiclaSenseME.userData.characteristic.writeValue(userData)
+      .then(_ => {
+        console.log('User data sent successfully.');
+      })
+      .catch(error => {
+        console.error('Error sending user data:', error);
+      });
   }
   function hideSnack() {
     snackBar = document.getElementById("snackbar");
@@ -483,8 +515,11 @@
           NiclaSenseME[sensor].characteristic.readValue().then(function (data) { handleIncoming(NiclaSenseME[sensor], data); })
         }
           , 500);
+        
       }
-      
+      if (sensor === 'userData') {
+        NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
+      }
       NiclaSenseME[sensor].rendered = false;
     }
     pairButton.style.backgroundColor = 'green';
@@ -570,20 +605,7 @@
 </script>
 
 <script>
-  const inputStringElement = document.getElementById('inputString');
-  const sendStringButton = document.getElementById('sendStringButton');
-
-  sendStringButton.addEventListener('click', function() {
-    const inputValue = inputStringElement.value;
-    if (inputValue) {
-      // Convert the string to Uint8Array and send it to the Nicla Sense ME device
-      const stringValue = new TextEncoder().encode(inputValue);
-      NiclaSenseME.receivedString.writeValue = stringValue;
-      BLEwriteTo('receivedString');
-    } else {
-      alert('Please enter a string before sending.');
-    }
-  });
+  
 
   function initColorPicker() {
     //Default color blue
