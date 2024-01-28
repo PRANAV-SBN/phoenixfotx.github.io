@@ -3,6 +3,8 @@
 <html>
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title> GAP 1 Dashboard</title>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto Mono' rel='stylesheet'>
@@ -47,6 +49,12 @@
       margin-top: 30px;
       margin-bottom: 7.5px;
       margin: 0 auto;
+    }
+
+    #userDataForm {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .widget {
@@ -202,6 +210,21 @@
         opacity: 1;
       }
     }
+        input,
+    select,
+    button {
+      padding: 8px;
+      border: 1px solid #fff; /* White border for text fields */
+      border-radius: 5px;
+      background-color: #333; /* Dark background for text fields */
+      color: #fff; /* White text color */
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #4CAF50; /* Green background color for the button */
+      color: #fff; /* White text color for the button */
+    }
   </style>
 </head>
 
@@ -289,24 +312,22 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
+
     <div class="widget">
-    <form id="userDataForm">
-      <label for="name">Name:</label>
-      <input type="text" id="name" name="name" required>
-      <br>
-      <label for="age">Age:</label>
-      <input type="number" id="age" name="age" required>
-      <br>
-      <label for="gender">Gender:</label>
-      <select id="gender" name="gender" required>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-        <option value="other">Other</option>
-      </select>
-      <br>
-      <button type="button" onclick="sendUserData()">Send Data</button>
-    </form>
-  </div>
+      <form id="userDataForm">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+        <button type="button" onclick="sendUserData()">Send Data</button>
+      </form>
+    </div>
   </div>
 </body>
 
