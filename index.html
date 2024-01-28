@@ -590,7 +590,6 @@
   function initGraph(sensor) {
     var title = sensor;
     var series = Object.keys(NiclaSenseME[sensor].data);
-    series = series.filter(item => item !== receiveData);
     var format = [];
     series.forEach(function (item) {
       colorIndex++;
