@@ -593,6 +593,7 @@
   // Graphing
   const colors = ["#FF355E", "#FD5B20", "#FF6037", "#FF9966", "#FF9933", "#FFCC33", "#FFFF66", "#FFFF66", "#CCFF00", "#66FF66", "#AAF0D1", "#50BFE6", "#FF6EFF", "#EE34D2", "#FF00CC", "#FF00CC"];
   var colorIndex = 0;
+  snack(NiclaSenseME['receiveData'].data.text.latest(),1);
   function initGraph(sensor) {
     var title = sensor;
     var series = Object.keys(NiclaSenseME[sensor].data);
@@ -778,7 +779,7 @@
       updateViz('gas', [digit, graph]);
       updateViz('quaternion', [update3d]);
       updateViz('Forcepad', [graph]);
-      snack(NiclaSenseME['receiveData'].data.text.latest(),1);
+   
       //bytes();  //Get the total amount of bytes received
 
       skip_frame = true; // render alternate frames = 30fps
@@ -797,7 +798,7 @@
   init3D();
   initGraph('Forcepad');
   requestAnimationFrame(draw);
-  snack(NiclaSenseME['receiveData'].data.text.latest(),1);
+  
 
 </script>
 
