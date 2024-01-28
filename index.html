@@ -391,15 +391,15 @@
       structure: ['Uint32'],
       data: { 'gas': [] }
     },
-    receivedString:
-    {
-      uuid: '19b10000-8002-537e-4f6c-d104768a1214',
-      properties: ['BLERead'],
-      structure: ['String'],
-      data: { 'receivedString': [] }
-    },
+    
   }
-
+  
+  NiclaSenseME.receivedString = {
+  uuid: '19b10000-8002-537e-4f6c-d104768a1214',
+  properties: ['BLERead'],
+  structure: ['String'],
+  data: { 'receivedString': [] }
+  };
   const sensors = Object.keys(NiclaSenseME);
   const SERVICE_UUID = '19b10000-0000-537e-4f6c-d104768a1214';
   var bytesReceived = 0;
@@ -477,10 +477,7 @@
         NiclaSenseME[sensor].characteristic.addEventListener('characteristicvaluechanged', function (event) { handleIncoming(NiclaSenseME[sensor], event.target.value); });
         await NiclaSenseME[sensor].characteristic.startNotifications();
       }
-      NiclaSenseME.receivedString.characteristic.addEventListener('characteristicvaluechanged', function (event) {
-        handleIncoming(NiclaSenseME.receivedString, event.target.value);
-      });
-      await NiclaSenseME.receivedString.characteristic.startNotifications();
+      
       // Set up polling for read
       if (NiclaSenseME[sensor].properties.includes("BLERead")) {
         NiclaSenseME[sensor].polling = setInterval(function () {
@@ -488,11 +485,18 @@
         }
           , 500);
       }
+      NiclaSenseME.receivedString.characteristic.addEventListener('characteristicvaluechanged', function (event) {
+        handleIncoming(NiclaSenseME.receivedString, event.target.value);
+      });
+
+      NiclaSenseME.receivedString.characteristic.startNotifications();
+
       NiclaSenseME.receivedString.polling = setInterval(function () {
         NiclaSenseME.receivedString.characteristic.readValue().then(function (data) {
           handleIncoming(NiclaSenseME.receivedString, data);
         });
       }, 500);
+
       NiclaSenseME[sensor].rendered = false;
     }
     pairButton.style.backgroundColor = 'green';
