@@ -289,7 +289,8 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
-
+  <input type="text" id="inputString" placeholder="Enter string">
+  <button id="sendStringButton">Send String</button>
   </div>
 </body>
 
@@ -385,6 +386,14 @@
       properties: ['BLERead'],
       structure: ['Uint32'],
       data: { 'gas': [] }
+    },
+  receivedString: {
+      uuid: '19b10000-9005-537e-4f6c-d104768a1214', // Use a unique UUID for your characteristic
+      properties: ['BLEWriteWithoutResponse'],
+      structure: ['Uint8'],
+      data: { 'receivedString': [] },
+      writeBusy: false,
+      writeValue: null
     },
     
   }
@@ -561,6 +570,20 @@
 </script>
 
 <script>
+  const inputStringElement = document.getElementById('inputString');
+  const sendStringButton = document.getElementById('sendStringButton');
+
+  sendStringButton.addEventListener('click', function() {
+    const inputValue = inputStringElement.value;
+    if (inputValue) {
+      // Convert the string to Uint8Array and send it to the Nicla Sense ME device
+      const stringValue = new TextEncoder().encode(inputValue);
+      NiclaSenseME.receivedString.writeValue = stringValue;
+      BLEwriteTo('receivedString');
+    } else {
+      alert('Please enter a string before sending.');
+    }
+  });
 
   function initColorPicker() {
     //Default color blue
