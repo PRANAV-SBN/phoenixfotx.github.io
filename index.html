@@ -335,6 +335,10 @@
         <button type="button" onclick="sendUserData()">Collect Data</button>
       </form>
     </div>
+    <div class="widget">
+      <div class="label">&#128225; Received Message</div>
+      <div id="received-message"></div>
+    </div>
   </div>
 </body>
 
@@ -431,11 +435,17 @@
       structure: ['Uint32'],
       data: { 'gas': [] }
     },
-  userData: {
+    userData: {
       uuid: '19b10000-9005-537e-4f6c-d104768a1214', // Use a unique UUID for your characteristic
       properties: ['BLEWriteWite'],
       structure: ['Uint8'],
       characteristic: null
+    },
+    receivedMessage: {
+      uuid: '19b10000-9006-537e-4f6c-d104768a1214', // You need to choose a unique UUID for this characteristic
+      properties: ['BLENotify'],
+      structure: ['String'],
+      data: { 'message': [] }
     },
     
   }
@@ -501,6 +511,11 @@
         console.error('Error sending user data:', error);
       });
   }
+  function handleReceivedMessage(dataReceived) {
+    const message = new TextDecoder().decode(dataReceived);
+    document.getElementById('received-message').innerHTML = message;
+  }
+
   function hideSnack() {
     snackBar = document.getElementById("snackbar");
     snackBar.style.visibility = "hidden";
@@ -548,6 +563,11 @@
       if (sensor === 'userData') {
         NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
       }
+      NiclaSenseME.receivedMessage.characteristic = await service.getCharacteristic(NiclaSenseME.receivedMessage.uuid);
+      NiclaSenseME.receivedMessage.characteristic.addEventListener('characteristicvaluechanged', function (event) {
+        handleReceivedMessage(event.target.value);
+      });
+      await NiclaSenseME.receivedMessage.characteristic.startNotifications();
       NiclaSenseME[sensor].rendered = false;
     }
     pairButton.style.backgroundColor = 'green';
@@ -615,6 +635,10 @@
     // The board's LED will go red once it detects it has been disconnected
     ledLight.color.setRGB(255,0,0);
     ledMaterial.color.setRGB(255,0,0);
+    if (NiclaSenseME.receivedMessage.characteristic) {
+      NiclaSenseME.receivedMessage.characteristic.stopNotifications();
+    }
+
   }
 
   function BLEwriteTo(sensor) {
