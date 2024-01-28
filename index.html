@@ -332,12 +332,25 @@
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
-        <button type="button" onclick="sendUserData()">Collect Data</button>
+        <button type="button" onclick="sendUserData()">Save Participant</button>
       </form>
     </div>
     <div class="widget">
       <div class="label">&#128225; GAP 1 Status</div>
       <div id="received-message"></div>
+    </div>
+    <div class="widget">
+      <form id="controlForm">
+        <label for="name">Cmd:</label>
+        <input type="text" id="Cmd" name="Cmd" required>
+        <label for="control">Control:</label>
+        <select id="control" name="control" required>
+          <option value="Start">Start</option>
+          <option value="Pause">Pause</option>
+          <option value="Stop">Stop</option>
+        </select>
+        <button type="button" onclick="sendUserData()">Collect Data</button>
+      </form>
     </div>
   </div>
 </body>
