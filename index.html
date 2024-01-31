@@ -350,7 +350,7 @@
           <option value="Resume">Resume</option>
           <option value="Stop">Stop</option>
         </select>
-        <button type="button" onclick="sendControlData()">Send Instruction</button>
+        <button type="button" onclick="sendUserDataAndControlData()">Send Instruction</button>
       </form>
     </div>
   </div>
@@ -558,6 +558,19 @@
         });
       document.getElementById("Cmd").value = "";
     }
+  function sendUserDataAndControlData() {
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+      const gender = document.getElementById('gender').value;
+      if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
+          // Send control data even if user details are not entered
+          alert("Participant Data not found.");
+      } else {
+          // Send both user data and control data
+          sendUserData();
+          sendControlData();
+      }
+}
   function handleReceivedMessage(dataReceived) {
     const message = new TextDecoder().decode(dataReceived);
     document.getElementById('received-message').innerHTML = message;
