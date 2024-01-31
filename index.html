@@ -514,7 +514,7 @@
     const age = document.getElementById('age').value;
     const gender = document.getElementById('gender').value;
     if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
-        alert("Enter data before sending");  
+        alert("Enter all the fields in the User Data Form before sending");  
     }else{
         // Convert string values to Uint8Array
         const nameBytes = new TextEncoder().encode(name);
