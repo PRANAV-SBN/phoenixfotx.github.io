@@ -513,23 +513,26 @@
     const name = document.getElementById('name').value;
     const age = document.getElementById('age').value;
     const gender = document.getElementById('gender').value;
-  
-    // Convert string values to Uint8Array
-    const nameBytes = new TextEncoder().encode(name);
-    const ageBytes = new TextEncoder().encode(age);
-    const genderBytes = new TextEncoder().encode(gender);
-  
-    // Concatenate the Uint8Array values
-    const userData = new Uint8Array([...nameBytes, ';'.charCodeAt(0), ...ageBytes, ';'.charCodeAt(0), ...genderBytes]);
-  
-    // Send the data to Nicla Sense ME
-    NiclaSenseME.userData.characteristic.writeValue(userData)
-      .then(_ => {
-        console.log('User data sent successfully.');
-      })
-      .catch(error => {
-        console.error('Error sending user data:', error);
-      });
+    if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
+        alert("Enter data before sending");  
+    }else{
+        // Convert string values to Uint8Array
+        const nameBytes = new TextEncoder().encode(name);
+        const ageBytes = new TextEncoder().encode(age);
+        const genderBytes = new TextEncoder().encode(gender);
+      
+        // Concatenate the Uint8Array values
+        const userData = new Uint8Array([...nameBytes, ';'.charCodeAt(0), ...ageBytes, ';'.charCodeAt(0), ...genderBytes]);
+      
+        // Send the data to Nicla Sense ME
+        NiclaSenseME.userData.characteristic.writeValue(userData)
+          .then(_ => {
+            console.log('User data sent successfully.');
+          })
+          .catch(error => {
+            console.error('Error sending user data:', error);
+          });
+      }
   }
     function sendControlData() {
       // Get user input values
