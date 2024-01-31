@@ -508,11 +508,17 @@
     setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-  function sendUserData() {
-    // Get user input values
     const name = document.getElementById('name').value;
     const age = document.getElementById('age').value;
     const gender = document.getElementById('gender').value;
+  function sendUserData() {
+    // Get user input values
+    console.log(name);
+    console.log(age);
+    console.log(gender);
+    name = document.getElementById('name').value;
+    age = document.getElementById('age').value;
+    gender = document.getElementById('gender').value;
     if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
         alert("Enter all the fields in the User Data Form before sending");  
     }else{
