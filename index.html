@@ -276,13 +276,6 @@
       <div class="label">&#128161; RGB LED control</div>
       <div id="color-picker-container" class="graph"></div>
     </div>
-    
-    <div class="short widget">
-      <div class="label">&#127777; Load_Force - </div>
-      <div class="label" id="load-value"></div>
-      <div class="label">&deg;C</div>
-      <div class="shortgraph" id="load"></div>
-    </div>
 
     <div class="short widget">
       <div class="label">&#127777; Temperature - </div>
@@ -583,8 +576,6 @@
     document.getElementById('received-message').innerHTML = message;
   }
 
-  function 
-
   function hideSnack() {
     snackBar = document.getElementById("snackbar");
     snackBar.style.visibility = "hidden";
@@ -650,67 +641,6 @@
 
     initColorPicker();
   }
-
-// Function to compute load force
-// Function to compute load force
-function computeLoadForce(acceleration, angularVelocity, quaternion, pressure) {
-  // Placeholder logic, replace with actual computation
-  let loadForce = 0;
-
-  // Example computation: combine all sensor data to compute load force
-  // You should replace this with your actual computation logic
-  // Here's just a placeholder for demonstration purposes
-  // Adjust the coefficients and the formula based on your requirements
-
-  // Normalize accelerometer data
-  let normAcceleration = Math.sqrt(acceleration.x ** 2 + acceleration.y ** 2 + acceleration.z ** 2);
-
-  // Compute angular acceleration from gyroscope data
-  let angularAcceleration = Math.sqrt(angularVelocity.x ** 2 + angularVelocity.y ** 2 + angularVelocity.z ** 2);
-
-  // Calculate quaternion magnitude
-  let normQuaternion = Math.sqrt(quaternion.x ** 2 + quaternion.y ** 2 + quaternion.z ** 2 + quaternion.w ** 2);
-
-  // Calculate load force based on sensor data and pressure
-  loadForce = 0.1 * normAcceleration + 0.2 * angularAcceleration + 0.3 * normQuaternion + 0.4 * pressure;
-
-  return loadForce;
-}
-
-
-// Function to update the load force value and graph
-function updateLoadForceWidget() {
-  // Assuming you have access to the NiclaSenseME sensor data
-  let acceleration = NiclaSenseME.accelerometer.data; // Example accelerometer data
-  let angularVelocity = NiclaSenseME.gyroscope.data; // Example gyroscope data
-  let quaternion = NiclaSenseME.quaternion.data; // Example quaternion data
-  let pressure = NiclaSenseME.pressure.data; // Example pressure data
-
-  // Compute load force
-  let loadForce = computeLoadForce(acceleration, angularVelocity, quaternion, pressure);
-
-  // Update the load force value in the HTML element
-  document.getElementById("load-value").textContent = loadForce.toFixed(2) + " N";
-
-  // Update the graph (optional)
-  updateLoadGraph(loadForce);
-
-  // Request the next frame to ensure smooth updates
-  requestAnimationFrame(updateLoadForceWidget);
-}
-
-// Function to update the load graph (assuming you have a function named updateLoadGraph)
-function updateLoadGraph(loadForce) {
-  // Example: Update a bar graph or any other graphical representation
-  // Here, I'm simply updating the width of the load graph div based on the load force
-  let loadGraphElement = document.getElementById("load");
-  loadGraphElement.style.width = (loadForce * 2) + "px"; // Adjust multiplier as needed
-}
-
-// Example usage:
-// Update the load force widget initially
-updateLoadForceWidget();
-
 
   function handleIncoming(sensor, dataReceived) {
     const columns = Object.keys(sensor.data); // column headings for this sensor
