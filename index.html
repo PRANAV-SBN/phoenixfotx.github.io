@@ -541,7 +541,7 @@
           });
       }
   }
-  let isLogging = false;
+let isLogging = false;
 let isPaused = false;
 let logInterval = null;
 let loggedData = [];
@@ -559,7 +559,7 @@ function startLogging() {
 
     if (!isLogging) {
         isLogging = true;
-        loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz"]];
+        loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
         logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
     }
 }
@@ -597,8 +597,14 @@ function logSensorData() {
     const Gx = NiclaSenseME.gyroscope.data.x.latest() || "-";
     const Gy = NiclaSenseME.gyroscope.data.y.latest() || "-";
     const Gz = NiclaSenseME.gyroscope.data.z.latest() || "-";
+    const Qx = NiclaSenseME.quaternion.data.x.latest() || "-";
+    const Qy = NiclaSenseME.quaternion.data.y.latest() || "-";
+    const Qz = NiclaSenseME.quaternion.data.z.latest() || "-";
+    const Qw = NiclaSenseME.quaternion.data.w.latest() || "-";
+    const F1 = NiclaSenseME.Forcepad.data.F1.latest() || "-";
+    const F2 = NiclaSenseME.Forcepad.data.F2.latest() || "-";
 
-    loggedData.push([timestamp, temperature, humidity, pressure, Ax, Ay, Az, Gx, Gy, Gz]);
+    loggedData.push([timestamp, temperature, humidity, pressure, Ax, Ay, Az, Gx, Gy, Gz, Qx, Qy, Qz, Qw, F1, F2]);
 }
 
 function downloadLoggedData() {
@@ -615,28 +621,33 @@ function downloadLoggedData() {
     document.body.removeChild(link); // Cleanup
 }
 
-    function sendControlData() {
-      // Get user input values
-      const Cmd = document.getElementById('Cmd').value;
-      const control = document.getElementById('control').value;
-    
-      // Convert string values to Uint8Array
-      const CmdBytes = new TextEncoder().encode(Cmd);
-      const controlBytes = new TextEncoder().encode(control);
-    
-      // Concatenate the Uint8Array values
-      const ControlData = new Uint8Array([...CmdBytes, ';'.charCodeAt(0), ...controlBytes]);
-    
-      // Send the data to Nicla Sense ME
-      NiclaSenseME.control.characteristic.writeValue(ControlData)
-        .then(_ => {
-          console.log('Control data sent successfully.');
-        })
-        .catch(error => {
-          console.error('Error sending Control data:', error);
-        });
-      document.getElementById("Cmd").value = "";
+function downloadParticipantData() {
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+
+    if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
+        alert("Enter all the fields in the User Data Form before downloading");
+        return;
     }
+
+    const data = [
+        ["Name", "Age", "Gender"],
+        [name, age, gender]
+    ];
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+        + data.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `${name}_data.csv`);
+    document.body.appendChild(link);
+
+    link.click();
+}
+
   function sendUserDataAndControlData() {
       const name = document.getElementById('name').value;
       const age = document.getElementById('age').value;
