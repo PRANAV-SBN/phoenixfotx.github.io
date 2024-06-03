@@ -532,7 +532,7 @@ function startLogging() {
     if (!isLogging) {
         isLogging = true;
         loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
-        logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
+        logInterval = setInterval(logSensorData, 1); // Adjust the interval as needed
     }
 }
 
@@ -554,7 +554,7 @@ function pauseLogging() {
 function resumeLogging() {
     if (isLogging && isPaused) {
         isPaused = false;
-        logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
+        logInterval = setInterval(logSensorData, 1); // Adjust the interval as needed
     }
 }
 
