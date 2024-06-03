@@ -560,7 +560,7 @@ function startLogging() {
     if (!isLogging) {
         isLogging = true;
         loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
-        logInterval = setInterval(logSensorData, 0.00001); // Adjust the interval as needed
+        logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
     }
 }
 
@@ -582,29 +582,31 @@ function pauseLogging() {
 function resumeLogging() {
     if (isLogging && isPaused) {
         isPaused = false;
-        logInterval = setInterval(logSensorData, 0.00001); // Adjust the interval as needed
+        logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
     }
 }
 
 function logSensorData() {
     const timestamp = new Date().toISOString();
-    const temperature = NiclaSenseME.temperature.data.temperature.latest() || "-";
-    const humidity = NiclaSenseME.humidity.data.humidity.latest() || "-";
-    const pressure = NiclaSenseME.pressure.data.pressure.latest() || "-";
-    const Ax = NiclaSenseME.accelerometer.data.Ax.latest() || "-";
-    const Ay = NiclaSenseME.accelerometer.data.Ay.latest() || "-";
-    const Az = NiclaSenseME.accelerometer.data.Az.latest() || "-";
-    const Gx = NiclaSenseME.gyroscope.data.x.latest() || "-";
-    const Gy = NiclaSenseME.gyroscope.data.y.latest() || "-";
-    const Gz = NiclaSenseME.gyroscope.data.z.latest() || "-";
-    const Qx = NiclaSenseME.quaternion.data.x.latest() || "-";
-    const Qy = NiclaSenseME.quaternion.data.y.latest() || "-";
-    const Qz = NiclaSenseME.quaternion.data.z.latest() || "-";
-    const Qw = NiclaSenseME.quaternion.data.w.latest() || "-";
-    const F1 = NiclaSenseME.Forcepad.data.F1.latest() || "-";
-    const F2 = NiclaSenseME.Forcepad.data.F2.latest() || "-";
+    const temperature = NiclaSenseME.temperature.data.temperature.length > 0 ? NiclaSenseME.temperature.data.temperature[NiclaSenseME.temperature.data.temperature.length - 1] : null;
+    const humidity = NiclaSenseME.humidity.data.humidity.length > 0 ? NiclaSenseME.humidity.data.humidity[NiclaSenseME.humidity.data.humidity.length - 1] : null;
+    const pressure = NiclaSenseME.pressure.data.pressure.length > 0 ? NiclaSenseME.pressure.data.pressure[NiclaSenseME.pressure.data.pressure.length - 1] : null;
+    const Ax = NiclaSenseME.accelerometer.data.Ax.length > 0 ? NiclaSenseME.accelerometer.data.Ax[NiclaSenseME.accelerometer.data.Ax.length - 1] : null;
+    const Ay = NiclaSenseME.accelerometer.data.Ay.length > 0 ? NiclaSenseME.accelerometer.data.Ay[NiclaSenseME.accelerometer.data.Ay.length - 1] : null;
+    const Az = NiclaSenseME.accelerometer.data.Az.length > 0 ? NiclaSenseME.accelerometer.data.Az[NiclaSenseME.accelerometer.data.Az.length - 1] : null;
+    const Gx = NiclaSenseME.gyroscope.data.x.length > 0 ? NiclaSenseME.gyroscope.data.x[NiclaSenseME.gyroscope.data.x.length - 1] : null;
+    const Gy = NiclaSenseME.gyroscope.data.y.length > 0 ? NiclaSenseME.gyroscope.data.y[NiclaSenseME.gyroscope.data.y.length - 1] : null;
+    const Gz = NiclaSenseME.gyroscope.data.z.length > 0 ? NiclaSenseME.gyroscope.data.z[NiclaSenseME.gyroscope.data.z.length - 1] : null;
+    const Qx = NiclaSenseME.quaternion.data.x.length > 0 ? NiclaSenseME.quaternion.data.x[NiclaSenseME.quaternion.data.x.length - 1] : null;
+    const Qy = NiclaSenseME.quaternion.data.y.length > 0 ? NiclaSenseME.quaternion.data.y[NiclaSenseME.quaternion.data.y.length - 1] : null;
+    const Qz = NiclaSenseME.quaternion.data.z.length > 0 ? NiclaSenseME.quaternion.data.z[NiclaSenseME.quaternion.data.z.length - 1] : null;
+    const Qw = NiclaSenseME.quaternion.data.w.length > 0 ? NiclaSenseME.quaternion.data.w[NiclaSenseME.quaternion.data.w.length - 1] : null;
+    const F1 = NiclaSenseME.Forcepad.data.F1.length > 0 ? NiclaSenseME.Forcepad.data.F1[NiclaSenseME.Forcepad.data.F1.length - 1] : null;
+    const F2 = NiclaSenseME.Forcepad.data.F2.length > 0 ? NiclaSenseME.Forcepad.data.F2[NiclaSenseME.Forcepad.data.F2.length - 1] : null;
 
-    loggedData.push([timestamp, temperature, humidity, pressure, Ax, Ay, Az, Gx, Gy, Gz, Qx, Qy, Qz, Qw, F1, F2]);
+    if (temperature !== null && humidity !== null && pressure !== null && Ax !== null && Ay !== null && Az !== null && Gx !== null && Gy !== null && Gz !== null && Qx !== null && Qy !== null && Qz !== null && Qw !== null && F1 !== null && F2 !== null) {
+        loggedData.push([timestamp, temperature, humidity, pressure, Ax, Ay, Az, Gx, Gy, Gz, Qx, Qy, Qz, Qw, F1, F2]);
+    }
 }
 
 function downloadLoggedData() {
@@ -647,6 +649,9 @@ function downloadParticipantData() {
 
     link.click();
 }
+</script>
+</body>
+</html>
 
   function sendUserDataAndControlData() {
       const name = document.getElementById('name').value;
