@@ -513,35 +513,7 @@
     setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-
-  function sendUserData() {
-    // Get user input values
-
-    const name = document.getElementById('name').value;
-    const age = document.getElementById('age').value;
-    const gender = document.getElementById('gender').value;
-    if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
-        alert("Enter all the fields in the User Data Form before sending");  
-    }else{
-        // Convert string values to Uint8Array
-        const nameBytes = new TextEncoder().encode(name);
-        const ageBytes = new TextEncoder().encode(age);
-        const genderBytes = new TextEncoder().encode(gender);
-      
-        // Concatenate the Uint8Array values
-        const userData = new Uint8Array([...nameBytes, ';'.charCodeAt(0), ...ageBytes, ';'.charCodeAt(0), ...genderBytes]);
-      
-        // Send the data to Nicla Sense ME
-        NiclaSenseME.userData.characteristic.writeValue(userData)
-          .then(_ => {
-            console.log('User data sent successfully.');
-          })
-          .catch(error => {
-            console.error('Error sending user data:', error);
-          });
-      }
-  }
-let isLogging = false;
+  let isLogging = false;
 let isPaused = false;
 let logInterval = null;
 let loggedData = [];
@@ -560,7 +532,7 @@ function startLogging() {
     if (!isLogging) {
         isLogging = true;
         loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
-        logInterval = setInterval(logSensorData, 0.001); // Adjust the interval as needed
+        logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
     }
 }
 
@@ -582,7 +554,7 @@ function pauseLogging() {
 function resumeLogging() {
     if (isLogging && isPaused) {
         isPaused = false;
-        logInterval = setInterval(logSensorData, 0.001); // Adjust the interval as needed
+        logInterval = setInterval(logSensorData, 1000); // Adjust the interval as needed
     }
 }
 
@@ -604,28 +576,9 @@ function logSensorData() {
     const F1 = NiclaSenseME.Forcepad.data.F1.length > 0 ? NiclaSenseME.Forcepad.data.F1[NiclaSenseME.Forcepad.data.F1.length - 1] : null;
     const F2 = NiclaSenseME.Forcepad.data.F2.length > 0 ? NiclaSenseME.Forcepad.data.F2[NiclaSenseME.Forcepad.data.F2.length - 1] : null;
 
-    // If any sensor value is still null, use the last logged value if available
-    const lastLogged = loggedData.length > 1 ? loggedData[loggedData.length - 1] : [];
-    const latestData = [
-        timestamp,
-        temperature !== null ? temperature : (lastLogged[1] !== undefined ? lastLogged[1] : "-"),
-        humidity !== null ? humidity : (lastLogged[2] !== undefined ? lastLogged[2] : "-"),
-        pressure !== null ? pressure : (lastLogged[3] !== undefined ? lastLogged[3] : "-"),
-        Ax !== null ? Ax : (lastLogged[4] !== undefined ? lastLogged[4] : "-"),
-        Ay !== null ? Ay : (lastLogged[5] !== undefined ? lastLogged[5] : "-"),
-        Az !== null ? Az : (lastLogged[6] !== undefined ? lastLogged[6] : "-"),
-        Gx !== null ? Gx : (lastLogged[7] !== undefined ? lastLogged[7] : "-"),
-        Gy !== null ? Gy : (lastLogged[8] !== undefined ? lastLogged[8] : "-"),
-        Gz !== null ? Gz : (lastLogged[9] !== undefined ? lastLogged[9] : "-"),
-        Qx !== null ? Qx : (lastLogged[10] !== undefined ? lastLogged[10] : "-"),
-        Qy !== null ? Qy : (lastLogged[11] !== undefined ? lastLogged[11] : "-"),
-        Qz !== null ? Qz : (lastLogged[12] !== undefined ? lastLogged[12] : "-"),
-        Qw !== null ? Qw : (lastLogged[13] !== undefined ? lastLogged[13] : "-"),
-        F1 !== null ? F1 : (lastLogged[14] !== undefined ? lastLogged[14] : "-"),
-        F2 !== null ? F2 : (lastLogged[15] !== undefined ? lastLogged[15] : "-")
-    ];
-
-    loggedData.push(latestData);
+    if (temperature !== null && humidity !== null && pressure !== null && Ax !== null && Ay !== null && Az !== null && Gx !== null && Gy !== null && Gz !== null && Qx !== null && Qy !== null && Qz !== null && Qw !== null && F1 !== null && F2 !== null) {
+        loggedData.push([timestamp, temperature, humidity, pressure, Ax, Ay, Az, Gx, Gy, Gz, Qx, Qy, Qz, Qw, F1, F2]);
+    }
 }
 
 function downloadLoggedData() {
@@ -657,7 +610,7 @@ function downloadParticipantData() {
         [name, age, gender]
     ];
 
-    let csvContent = "data:text/csv;charset=utf-8,"
+    let csvContent = "data:text/csv;charset=utf-8," 
         + data.map(e => e.join(",")).join("\n");
 
     const encodedUri = encodeURI(csvContent);
@@ -669,6 +622,38 @@ function downloadParticipantData() {
     link.click();
 }
 </script>
+</body>
+</html>
+
+
+  function sendUserData() {
+    // Get user input values
+
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+    if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
+        alert("Enter all the fields in the User Data Form before sending");  
+    }else{
+        // Convert string values to Uint8Array
+        const nameBytes = new TextEncoder().encode(name);
+        const ageBytes = new TextEncoder().encode(age);
+        const genderBytes = new TextEncoder().encode(gender);
+      
+        // Concatenate the Uint8Array values
+        const userData = new Uint8Array([...nameBytes, ';'.charCodeAt(0), ...ageBytes, ';'.charCodeAt(0), ...genderBytes]);
+      
+        // Send the data to Nicla Sense ME
+        NiclaSenseME.userData.characteristic.writeValue(userData)
+          .then(_ => {
+            console.log('User data sent successfully.');
+          })
+          .catch(error => {
+            console.error('Error sending user data:', error);
+          });
+      }
+  }
+
 
   function sendUserDataAndControlData() {
       const name = document.getElementById('name').value;
