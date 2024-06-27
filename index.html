@@ -10,7 +10,6 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fft.js@0.3.3"></script>
   <script src="GLTFLoader.js"></script>
   <style>
     * {
@@ -319,11 +318,6 @@
       <div class="label"></div>
       <div class="shortgraph" id="gas"></div>
     </div>
-    
-    <div class="square widget">
-      <div class="label">&#127929; Tremor Frequency</div>
-      <div class="digit" id="tremor-frequency">- Hz</div>
-    </div>
 
 
     <div class="widget">
@@ -541,32 +535,6 @@ function startLogging() {
         loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
         logInterval = setInterval(logSensorData, 0.01); // Adjust the interval as needed
     }
-}
-function calculateTremorFrequency() {
-  const accX = NiclaSenseME.accelerometer.data.Ax;
-  if (accX.length < 64) {
-    return; // Ensure there are enough data points for FFT
-  }
-
-  const fft = new FFT(64); // Initialize FFT with the length of the data
-  const out = fft.createComplexArray();
-  fft.realTransform(out, accX);
-  fft.completeSpectrum(out);
-
-  let maxMagnitude = 0;
-  let peakFrequencyIndex = 0;
-  for (let i = 0; i < out.length / 2; i++) {
-    const magnitude = Math.sqrt(out[2 * i] ** 2 + out[2 * i + 1] ** 2);
-    if (magnitude > maxMagnitude) {
-      maxMagnitude = magnitude;
-      peakFrequencyIndex = i;
-    }
-  }
-
-  const sampleRate = 100; // Sample rate in Hz, adjust based on your actual sample rate
-  const peakFrequency = peakFrequencyIndex * sampleRate / 64;
-
-  document.getElementById('tremor-frequency').innerHTML = peakFrequency.toFixed(2) + ' Hz';
 }
 
 function stopLogging() {
@@ -1064,36 +1032,32 @@ function downloadParticipantData() {
   }
 
   var skip_frame = false;
-  
   function draw() {
-  function updateViz(sensor, fns) {
-    if (NiclaSenseME[sensor].rendered == false) { // only render if new values are received
-      fns.forEach(function (fn) {
-        fn(sensor);
-      });
-      NiclaSenseME[sensor].rendered = true;
+    function updateViz(sensor, fns) {
+      if (NiclaSenseME[sensor].rendered == false) { // only render if new values are received
+        fns.forEach(function (fn) {
+          fn(sensor);
+        });
+        NiclaSenseME[sensor].rendered = true;
+      }
     }
-  }
-  if (skip_frame == false) { // TODO update with fuction to iterate object with viz function as a property
-    updateViz('accelerometer', [graph, calculateTremorFrequency]);
-    updateViz('gyroscope', [graph]);
-    updateViz('temperature', [digit, graph]);
-    updateViz('humidity', [digit, graph]);
-    updateViz('pressure', [digit, graph]);
-    updateViz('bsec', [digit, graph]);
-    updateViz('co2', [digit, graph]);
-    updateViz('gas', [digit, graph]);
-    updateViz('quaternion', [update3d]);
-    updateViz('Forcepad', [graph]);
-    //bytes();  //Get the total amount of bytes received
+    if (skip_frame == false) { // TODO update with fuction to iterate object with viz function as a property
+      updateViz('accelerometer', [graph]);
+      updateViz('gyroscope', [graph]);
+      updateViz('temperature', [digit, graph]);
+      updateViz('humidity', [digit, graph]);
+      updateViz('pressure', [digit, graph]);
+      updateViz('bsec', [digit, graph]);
+      updateViz('co2', [digit, graph]);
+      updateViz('gas', [digit, graph]);
+      updateViz('quaternion', [update3d]);
+      updateViz('Forcepad', [graph]);
+      //bytes();  //Get the total amount of bytes received
 
-    skip_frame = true; // render alternate frames = 30fps
-  } else {
-    skip_frame = false;
+      skip_frame = true; // render alternate frames = 30fps
+    } else { skip_frame = false; }
+    requestAnimationFrame(draw);
   }
-  requestAnimationFrame(draw);
-}
-
 
   initGraph('gyroscope');
   initGraph('accelerometer');
