@@ -4,13 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> GAP 1 Dashboard</title>
+  <title>GAP 1 Dashboard</title>
 
   <link href='https://fonts.googleapis.com/css?family=Roboto Mono' rel='stylesheet'>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@jaames/iro/dist/iro.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js"></script>
   <script src="GLTFLoader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fft.js/0.3.3/fft.min.js"></script>
   <style>
     * {
       font-family: 'Roboto Mono', sans-serif;
@@ -216,20 +217,26 @@
         opacity: 1;
       }
     }
-        input,
+
+    input,
     select,
     button {
       padding: 8px;
-      border: 1px solid #fff; /* White border for text fields */
+      border: 1px solid #fff;
+      /* White border for text fields */
       border-radius: 5px;
-      background-color: #333; /* Dark background for text fields */
-      color: #fff; /* White text color */
+      background-color: #333;
+      /* Dark background for text fields */
+      color: #fff;
+      /* White text color */
     }
 
     button {
       cursor: pointer;
-      background-color: #4CAF50; /* Green background color for the button */
-      color: #fff; /* White text color for the button */
+      background-color: #4CAF50;
+      /* Green background color for the button */
+      color: #fff;
+      /* White text color for the button */
     }
   </style>
 </head>
@@ -270,7 +277,7 @@
       <div class="label" id="forcepad-value"></div>
       <div id="Forcepad" class="doublegraph"></div>
     </div>
-    
+
     <div class="square widget">
       <div class="label">&#128161; RGB LED control</div>
       <div id="color-picker-container" class="graph"></div>
@@ -288,7 +295,6 @@
       <div class="label" id="humidity-value"></div>
       <div class="label">%</div>
       <div class="shortgraph" id="humidity"></div>
-
     </div>
 
     <div class="short widget">
@@ -353,58 +359,50 @@
       </form>
     </div>
     <div class="widget">
-    <button type="button" onclick="startLogging()">Start Logging</button>
-    <button type="button" onclick="stopLogging()">Stop Logging</button>
-    <button type="button" onclick="pauseLogging()">Pause Logging</button>
-    <button type="button" onclick="resumeLogging()">Resume Logging</button>
-  </div>
+      <button type="button" onclick="startLogging()">Start Logging</button>
+      <button type="button" onclick="stopLogging()">Stop Logging</button>
+      <button type="button" onclick="pauseLogging()">Pause Logging</button>
+      <button type="button" onclick="resumeLogging()">Resume Logging</button>
+    </div>
+    <div class="square widget">
+      <div class="label">&#127929; Tremor Frequency</div>
+      <div class="digit" id="tremor-frequency">- Hz</div>
+    </div>
   </div>
 </body>
 
 <script type="text/javascript">
-  /*
-  Demo showing simple dashboard of Arduino Nicla Sense ME (from the BLE Sense version)
-  
-  Based on: https://developers.google.com/web/updates/2015/07/interact-with-ble-devices-on-the-web
-  For earlier versions of Windows and Linux, you still have to go to chrome://flags/#enable-experimental-web-platform-features,
-  enable the highlighted flag, and restart Chrome for now.
-  */
+  // Existing script code
 
   var maxRecords = 64;
 
-  var NiclaSenseME =
-  {
-    temperature:
-    {
+  var NiclaSenseME = {
+    temperature: {
       uuid: '19b10000-2001-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Float32'],
       data: { temperature: [] }
     },
-    humidity:
-    {
+    humidity: {
       uuid: '19b10000-3001-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Uint8'],
       data: { humidity: [] }
     },
-    pressure:
-    {
+    pressure: {
       uuid: '19b10000-4001-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Float32'],
       data: { pressure: [] }
     },
-    accelerometer:
-    {
+    accelerometer: {
       uuid: '19b10000-5001-537e-4f6c-d104768a1214',
       properties: ['BLENotify'],
       structure: ['Float32', 'Float32', 'Float32'],
       data: { 'Ax': [], 'Ay': [], 'Az': [] }
     },
-    
-    gyroscope:
-    {
+
+    gyroscope: {
       uuid: '19b10000-6001-537e-4f6c-d104768a1214',
       properties: ['BLENotify'],
       structure: ['Float32', 'Float32', 'Float32'],
@@ -426,29 +424,25 @@
       writeBusy: false, // we need to track this to avoid 'GATT operation in progress' errors
       writeValue: null
     },
-    Forcepad:
-    {
+    Forcepad: {
       uuid: '19b10000-9004-537e-4f6c-d104768a1214',
       properties: ['BLENotify'],
       structure: ['Float32', 'Float32'],
-      data: { 'F1': [], 'F2': []}
+      data: { 'F1': [], 'F2': [] }
     },
-    bsec:
-    {
+    bsec: {
       uuid: '19b10000-9001-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Float32'],
       data: { 'bsec': [] }
     },
-    co2:
-    {
+    co2: {
       uuid: '19b10000-9002-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Uint32'],
       data: { 'co2': [] }
     },
-    gas:
-    {
+    gas: {
       uuid: '19b10000-9003-537e-4f6c-d104768a1214',
       properties: ['BLERead'],
       structure: ['Uint32'],
@@ -472,9 +466,8 @@
       structure: ['Uint8'],
       characteristic: null
     },
-    
+
   }
-  
 
   const sensors = Object.keys(NiclaSenseME);
   const SERVICE_UUID = '19b10000-0000-537e-4f6c-d104768a1214';
@@ -486,7 +479,7 @@
   const BLEstatus = document.getElementById('bluetooth');
 
   snack('IMPORTANT - first upload the sketch to your GAP1 device &nbsp;&nbsp; <a href="https://create.arduino.cc/editor/balanagapranavs/e7020930-d173-424c-98ec-9669f668ac34/preview">OPEN</a>', 1)
-  
+
   if ("bluetooth" in navigator) {
     pairButton.addEventListener('click', function (event) {
       connect();
@@ -510,55 +503,58 @@
 
     var warnEmoji = warningLevel ? '☝️  ' : '✅  ';
 
-    setTimeout(function () { snackBar.className = snackBar.className.replace("show", ""); }, 501);
+    setTimeout(function () {
+      snackBar.className = snackBar.className.replace("show", "");
+    }, 501);
     snackBar.innerHTML = warnEmoji + m + ' <span onClick=hideSnack() style="cursor:pointer; margin-left: 15px"> ✖ </span> ';
   }
-let isLogging = false;
-let isPaused = false;
-let logInterval = null;
-let loggedData = [];
-let participantName = '';
 
-function startLogging() {
+  let isLogging = false;
+  let isPaused = false;
+  let logInterval = null;
+  let loggedData = [];
+  let participantName = '';
+
+  function startLogging() {
     participantName = document.getElementById('name').value;
     const age = document.getElementById('age').value;
     const gender = document.getElementById('gender').value;
 
     if (participantName.trim() === "" || age.trim() === "" || gender.trim() === "") {
-        alert("Enter all the fields in the User Data Form before starting logging");
-        return;
+      alert("Enter all the fields in the User Data Form before starting logging");
+      return;
     }
 
     if (!isLogging) {
-        isLogging = true;
-        loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
-        logInterval = setInterval(logSensorData, 0.01); // Adjust the interval as needed
+      isLogging = true;
+      loggedData = [["Timestamp", "Temperature", "Humidity", "Pressure", "Ax", "Ay", "Az", "Gx", "Gy", "Gz", "Qx", "Qy", "Qz", "Qw", "F1", "F2"]];
+      logInterval = setInterval(logSensorData, 0.01); // Adjust the interval as needed
     }
-}
+  }
 
-function stopLogging() {
+  function stopLogging() {
     if (isLogging) {
-        clearInterval(logInterval);
-        isLogging = false;
-        downloadLoggedData();
+      clearInterval(logInterval);
+      isLogging = false;
+      downloadLoggedData();
     }
-}
+  }
 
-function pauseLogging() {
+  function pauseLogging() {
     if (isLogging && !isPaused) {
-        clearInterval(logInterval);
-        isPaused = true;
+      clearInterval(logInterval);
+      isPaused = true;
     }
-}
+  }
 
-function resumeLogging() {
+  function resumeLogging() {
     if (isLogging && isPaused) {
-        isPaused = false;
-        logInterval = setInterval(logSensorData, 0.01); // Adjust the interval as needed
+      isPaused = false;
+      logInterval = setInterval(logSensorData, 0.01); // Adjust the interval as needed
     }
-}
+  }
 
-function logSensorData() {
+  function logSensorData() {
     const timestamp = new Date().toISOString();
     const temperature = NiclaSenseME.temperature.data.temperature.length > 0 ? NiclaSenseME.temperature.data.temperature[NiclaSenseME.temperature.data.temperature.length - 1] : null;
     const humidity = NiclaSenseME.humidity.data.humidity.length > 0 ? NiclaSenseME.humidity.data.humidity[NiclaSenseME.humidity.data.humidity.length - 1] : null;
@@ -579,30 +575,30 @@ function logSensorData() {
     // If any sensor value is still null, use the last logged value if available
     const lastLogged = loggedData.length > 1 ? loggedData[loggedData.length - 1] : [];
     const latestData = [
-        timestamp,
-        temperature !== null ? temperature : (lastLogged[1] !== undefined ? lastLogged[1] : "-"),
-        humidity !== null ? humidity : (lastLogged[2] !== undefined ? lastLogged[2] : "-"),
-        pressure !== null ? pressure : (lastLogged[3] !== undefined ? lastLogged[3] : "-"),
-        Ax !== null ? Ax : (lastLogged[4] !== undefined ? lastLogged[4] : "-"),
-        Ay !== null ? Ay : (lastLogged[5] !== undefined ? lastLogged[5] : "-"),
-        Az !== null ? Az : (lastLogged[6] !== undefined ? lastLogged[6] : "-"),
-        Gx !== null ? Gx : (lastLogged[7] !== undefined ? lastLogged[7] : "-"),
-        Gy !== null ? Gy : (lastLogged[8] !== undefined ? lastLogged[8] : "-"),
-        Gz !== null ? Gz : (lastLogged[9] !== undefined ? lastLogged[9] : "-"),
-        Qx !== null ? Qx : (lastLogged[10] !== undefined ? lastLogged[10] : "-"),
-        Qy !== null ? Qy : (lastLogged[11] !== undefined ? lastLogged[11] : "-"),
-        Qz !== null ? Qz : (lastLogged[12] !== undefined ? lastLogged[12] : "-"),
-        Qw !== null ? Qw : (lastLogged[13] !== undefined ? lastLogged[13] : "-"),
-        F1 !== null ? F1 : (lastLogged[14] !== undefined ? lastLogged[14] : "-"),
-        F2 !== null ? F2 : (lastLogged[15] !== undefined ? lastLogged[15] : "-")
+      timestamp,
+      temperature !== null ? temperature : (lastLogged[1] !== undefined ? lastLogged[1] : "-"),
+      humidity !== null ? humidity : (lastLogged[2] !== undefined ? lastLogged[2] : "-"),
+      pressure !== null ? pressure : (lastLogged[3] !== undefined ? lastLogged[3] : "-"),
+      Ax !== null ? Ax : (lastLogged[4] !== undefined ? lastLogged[4] : "-"),
+      Ay !== null ? Ay : (lastLogged[5] !== undefined ? lastLogged[5] : "-"),
+      Az !== null ? Az : (lastLogged[6] !== undefined ? lastLogged[6] : "-"),
+      Gx !== null ? Gx : (lastLogged[7] !== undefined ? lastLogged[7] : "-"),
+      Gy !== null ? Gy : (lastLogged[8] !== undefined ? lastLogged[8] : "-"),
+      Gz !== null ? Gz : (lastLogged[9] !== undefined ? lastLogged[9] : "-"),
+      Qx !== null ? Qx : (lastLogged[10] !== undefined ? lastLogged[10] : "-"),
+      Qy !== null ? Qy : (lastLogged[11] !== undefined ? lastLogged[11] : "-"),
+      Qz !== null ? Qz : (lastLogged[12] !== undefined ? lastLogged[12] : "-"),
+      Qw !== null ? Qw : (lastLogged[13] !== undefined ? lastLogged[13] : "-"),
+      F1 !== null ? F1 : (lastLogged[14] !== undefined ? lastLogged[14] : "-"),
+      F2 !== null ? F2 : (lastLogged[15] !== undefined ? lastLogged[15] : "-")
     ];
 
     loggedData.push(latestData);
-}
+  }
 
-function downloadLoggedData() {
-    let csvContent = "data:text/csv;charset=utf-8,"
-        + loggedData.map(e => e.join(",")).join("\n");
+  function downloadLoggedData() {
+    let csvContent = "data:text/csv;charset=utf-8," +
+      loggedData.map(e => e.join(",")).join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -612,25 +608,25 @@ function downloadLoggedData() {
 
     link.click();
     document.body.removeChild(link); // Cleanup
-}
+  }
 
-function downloadParticipantData() {
+  function downloadParticipantData() {
     const name = document.getElementById('name').value;
     const age = document.getElementById('age').value;
     const gender = document.getElementById('gender').value;
 
     if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
-        alert("Enter all the fields in the User Data Form before downloading");
-        return;
+      alert("Enter all the fields in the User Data Form before downloading");
+      return;
     }
 
     const data = [
-        ["Name", "Age", "Gender"],
-        [name, age, gender]
+      ["Name", "Age", "Gender"],
+      [name, age, gender]
     ];
 
-    let csvContent = "data:text/csv;charset=utf-8,"
-        + data.map(e => e.join(",")).join("\n");
+    let csvContent = "data:text/csv;charset=utf-8," +
+      data.map(e => e.join(",")).join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -639,7 +635,7 @@ function downloadParticipantData() {
     document.body.appendChild(link);
 
     link.click();
-}
+  }
 
 
   function sendUserData() {
@@ -649,41 +645,42 @@ function downloadParticipantData() {
     const age = document.getElementById('age').value;
     const gender = document.getElementById('gender').value;
     if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
-        alert("Enter all the fields in the User Data Form before sending");  
-    }else{
-        // Convert string values to Uint8Array
-        const nameBytes = new TextEncoder().encode(name);
-        const ageBytes = new TextEncoder().encode(age);
-        const genderBytes = new TextEncoder().encode(gender);
-      
-        // Concatenate the Uint8Array values
-        const userData = new Uint8Array([...nameBytes, ';'.charCodeAt(0), ...ageBytes, ';'.charCodeAt(0), ...genderBytes]);
-      
-        // Send the data to Nicla Sense ME
-        NiclaSenseME.userData.characteristic.writeValue(userData)
-          .then(_ => {
-            console.log('User data sent successfully.');
-          })
-          .catch(error => {
-            console.error('Error sending user data:', error);
-          });
-      }
+      alert("Enter all the fields in the User Data Form before sending");
+    } else {
+      // Convert string values to Uint8Array
+      const nameBytes = new TextEncoder().encode(name);
+      const ageBytes = new TextEncoder().encode(age);
+      const genderBytes = new TextEncoder().encode(gender);
+
+      // Concatenate the Uint8Array values
+      const userData = new Uint8Array([...nameBytes, ';'.charCodeAt(0), ...ageBytes, ';'.charCodeAt(0), ...genderBytes]);
+
+      // Send the data to Nicla Sense ME
+      NiclaSenseME.userData.characteristic.writeValue(userData)
+        .then(_ => {
+          console.log('User data sent successfully.');
+        })
+        .catch(error => {
+          console.error('Error sending user data:', error);
+        });
+    }
   }
 
 
   function sendUserDataAndControlData() {
-      const name = document.getElementById('name').value;
-      const age = document.getElementById('age').value;
-      const gender = document.getElementById('gender').value;
-      if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
-          // Send control data even if user details are not entered
-          alert("Participant Data not found.");
-      } else {
-          // Send both user data and control data
-          //sendUserData();
-          sendControlData();
-      }
-}
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const gender = document.getElementById('gender').value;
+    if (name.trim() === "" || age.trim() === "" || gender.trim() === "") {
+      // Send control data even if user details are not entered
+      alert("Participant Data not found.");
+    } else {
+      // Send both user data and control data
+      //sendUserData();
+      sendControlData();
+    }
+  }
+
   function handleReceivedMessage(dataReceived) {
     const message = new TextDecoder().decode(dataReceived);
     document.getElementById('received-message').innerHTML = message;
@@ -701,11 +698,9 @@ function downloadParticipantData() {
     msg('requesting device ...');
 
     const device = await navigator.bluetooth.requestDevice({
-      filters: [
-        {
-          services: [SERVICE_UUID] // SERVICE_UUID
-        }
-      ]
+      filters: [{
+        services: [SERVICE_UUID] // SERVICE_UUID
+      }]
     });
 
     msg('connecting to device ...');
@@ -721,17 +716,20 @@ function downloadParticipantData() {
       NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
       // Set up notification
       if (NiclaSenseME[sensor].properties.includes("BLENotify")) {
-        NiclaSenseME[sensor].characteristic.addEventListener('characteristicvaluechanged', function (event) { handleIncoming(NiclaSenseME[sensor], event.target.value); });
+        NiclaSenseME[sensor].characteristic.addEventListener('characteristicvaluechanged', function (event) {
+          handleIncoming(NiclaSenseME[sensor], event.target.value);
+        });
         await NiclaSenseME[sensor].characteristic.startNotifications();
       }
-      
+
       // Set up polling for read
       if (NiclaSenseME[sensor].properties.includes("BLERead")) {
         NiclaSenseME[sensor].polling = setInterval(function () {
-          NiclaSenseME[sensor].characteristic.readValue().then(function (data) { handleIncoming(NiclaSenseME[sensor], data); })
-        }
-          , 500);
-        
+          NiclaSenseME[sensor].characteristic.readValue().then(function (data) {
+            handleIncoming(NiclaSenseME[sensor], data);
+          })
+        }, 500);
+
       }
       if (sensor === 'userData') {
         NiclaSenseME[sensor].characteristic = await service.getCharacteristic(NiclaSenseME[sensor].uuid);
@@ -758,19 +756,41 @@ function downloadParticipantData() {
   function handleIncoming(sensor, dataReceived) {
     const columns = Object.keys(sensor.data); // column headings for this sensor
     const typeMap = {
-      "Uint8": { fn: DataView.prototype.getUint8, bytes: 1 },
-      "Uint16": { fn: DataView.prototype.getUint16, bytes: 2 },
-      "Uint32": { fn: DataView.prototype.getUint32, bytes: 4 },
-      "Int16": { fn: DataView.prototype.getInt16, bytes: 2 },
-      "Float32": { fn: DataView.prototype.getFloat32, bytes: 4 },
-      "String": { fn: (dataView, offset) => {
-                  const length = dataView.getUint8(offset);
-                  offset += 1;
-                  const stringValue = String.fromCharCode(...new Array(length).fill(0).map((_, i) => dataView.getUint8(offset + i)));
-                  return { value: stringValue, bytes: length + 1 };
-                  }, bytes: -1 } // Use -1 to indicate variable length
+      "Uint8": {
+        fn: DataView.prototype.getUint8,
+        bytes: 1
+      },
+      "Uint16": {
+        fn: DataView.prototype.getUint16,
+        bytes: 2
+      },
+      "Uint32": {
+        fn: DataView.prototype.getUint32,
+        bytes: 4
+      },
+      "Int16": {
+        fn: DataView.prototype.getInt16,
+        bytes: 2
+      },
+      "Float32": {
+        fn: DataView.prototype.getFloat32,
+        bytes: 4
+      },
+      "String": {
+        fn: (dataView, offset) => {
+          const length = dataView.getUint8(offset);
+          offset += 1;
+          const stringValue = String.fromCharCode(...new Array(length).fill(0).map((_, i) => dataView.getUint8(offset + i)));
+          return {
+            value: stringValue,
+            bytes: length + 1
+          };
+        },
+        bytes: -1
+      } // Use -1 to indicate variable length
     };
-    var packetPointer = 0, i = 0;
+    var packetPointer = 0,
+      i = 0;
 
     // Read each sensor value in the BLE packet and push into the data array
     sensor.structure.forEach(function (dataType) {
@@ -781,7 +801,9 @@ function downloadParticipantData() {
       // Push sensor reading onto data array
       sensor.data[columns[i]].push(unpackedValue);
       // Keep array at buffer size
-      if (sensor.data[columns[i]].length > maxRecords) { sensor.data[columns[i]].shift(); }
+      if (sensor.data[columns[i]].length > maxRecords) {
+        sensor.data[columns[i]].shift();
+      }
       // move pointer forward in data packet to next value
       packetPointer += typeMap[dataType].bytes;
       bytesReceived += typeMap[dataType].bytes;
@@ -809,8 +831,8 @@ function downloadParticipantData() {
     msg("Disconnected");
 
     // The board's LED will go red once it detects it has been disconnected
-    ledLight.color.setRGB(255,0,0);
-    ledMaterial.color.setRGB(255,0,0);
+    ledLight.color.setRGB(255, 0, 0);
+    ledMaterial.color.setRGB(255, 0, 0);
     if (NiclaSenseME.receivedMessage.characteristic) {
       NiclaSenseME.receivedMessage.characteristic.stopNotifications();
     }
@@ -828,20 +850,41 @@ function downloadParticipantData() {
         console.log(error);
       });
   }
-  
 
-</script>
+  function calculateTremorFrequency() {
+    const accX = NiclaSenseME.accelerometer.data.Ax;
+    const accY = NiclaSenseME.accelerometer.data.Ay;
+    const accZ = NiclaSenseME.accelerometer.data.Az;
 
-<script>
-  
+    if (accX.length > 0) {
+      const fft = new FFTJS(accX.length);
+      const out = fft.createComplexArray();
+      fft.realTransform(out, accX);
+      fft.completeSpectrum(out);
+
+      const frequencies = fft.getFrequencies(out);
+      const peakFrequency = frequencies.reduce((max, freq, index) => {
+        if (freq > max.amplitude) {
+          max.amplitude = freq;
+          max.frequency = index * (sampleRate / accX.length);
+        }
+        return max;
+      }, {
+        amplitude: 0,
+        frequency: 0
+      });
+
+      document.getElementById('tremor-frequency').innerHTML = peakFrequency.frequency.toFixed(2) + ' Hz';
+    }
+  }
 
   function initColorPicker() {
     //Default color blue
     var rgb_values = Uint8Array.of(0, 0, 255);
     NiclaSenseME['led'].writeValue = rgb_values;
     BLEwriteTo('led');
-    ledMaterial.color.setRGB(0,0,255);
-    ledLight.color.setRGB(0,0,255);
+    ledMaterial.color.setRGB(0, 0, 255);
+    ledLight.color.setRGB(0, 0, 255);
 
     NiclaSenseME.led.colorPicker = new iro.ColorPicker("#color-picker-container", {
       width: 150,
@@ -853,52 +896,65 @@ function downloadParticipantData() {
     });
     // RGB Color Picker
     NiclaSenseME.led.colorPicker.on('color:change', updateModelLed);
+
     function updateModelLed(color) {
       ledLight.color.setHex("0x" + color.hexString.substring(1, 7));
-      ledMaterial.color.set(color.hexString)   // where r, g, and b are 0 to 1
+      ledMaterial.color.set(color.hexString) // where r, g, and b are 0 to 1
       var rgb_values = Uint8Array.of(color.rgb.r, color.rgb.g, color.rgb.b);
       NiclaSenseME['led'].writeValue = rgb_values;
       BLEwriteTo('led');
     }
-
-    
   }
 
   // Graphing
   const colors = ["#FF355E", "#FD5B20", "#FF6037", "#FF9966", "#FF9933", "#FFCC33", "#FFFF66", "#FFFF66", "#CCFF00", "#66FF66", "#AAF0D1", "#50BFE6", "#FF6EFF", "#EE34D2", "#FF00CC", "#FF00CC"];
   var colorIndex = 0;
+
   function initGraph(sensor) {
     var title = sensor;
     var series = Object.keys(NiclaSenseME[sensor].data);
     var format = [];
     series.forEach(function (item) {
       colorIndex++;
-      if (colorIndex > colors.length) { colorIndex = 0; }
+      if (colorIndex > colors.length) {
+        colorIndex = 0;
+      }
       format.push({
         y: [],
         name: item,
         mode: 'lines',
         width: 1,
-        line: { width: 1, color: colors[colorIndex] }
+        line: {
+          width: 1,
+          color: colors[colorIndex]
+        }
       });
     });
 
     Plotly.plot(title, format, {
       plot_bgcolor: '#111111',
       paper_bgcolor: '#111111',
-      margin: { l: 8, r: 8, b: 18, t: 18 },
+      margin: {
+        l: 8,
+        r: 8,
+        b: 18,
+        t: 18
+      },
       showlegend: true,
-      yaxis: { 'showticklabels': true },
+      yaxis: {
+        'showticklabels': true
+      },
       xaxis: {
         'range': [0, maxRecords],
         'showticklabels': true,
         'autorange': false,
         'showgrid': true,
         'zeroline': true,
-        tickfont: { size: 8 }
+        tickfont: {
+          size: 8
+        }
       }
-    }
-    );
+    });
   }
 
   // 3d model
@@ -926,22 +982,24 @@ function downloadParticipantData() {
 
         // LED
         var geometry = new THREE.BoxGeometry(1, 1, 1);
-        ledMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 });
+        ledMaterial = new THREE.MeshBasicMaterial({
+          color: 0x111111
+        });
         ledObject = new THREE.Mesh(geometry, ledMaterial);
         ledObject.position.set(9, -10, -1);
-        
+
         ledLight = new THREE.PointLight(0x111111, 3, 40);
-        ledLight.color.setRGB(0,255,0);
+        ledLight.color.setRGB(0, 255, 0);
         ledLight.position.set(9, -10, -1.2);
-        
-        ledMaterial.color.setRGB(0,255,0);
+
+        ledMaterial.color.setRGB(0, 255, 0);
 
         arduinoModel.add(ledObject);
         arduinoModel.add(ledLight);
 
-        arduinoModel.rotation.x = (Math.PI/180);  // Show the bottom side of the board by default
-        arduinoModel.rotation.y = 90 * (Math.PI/180);  
-        
+        arduinoModel.rotation.x = (Math.PI / 180); // Show the bottom side of the board by default
+        arduinoModel.rotation.y = 90 * (Math.PI / 180);
+
         var sphereSize = 1;
 
         // Light
@@ -976,13 +1034,17 @@ function downloadParticipantData() {
       G = NiclaSenseME[sensor].data.G[i];
       B = NiclaSenseME[sensor].data.B[i];
       total = R + G + B;
-      R = R / total * 255; G = G / total * 255; B = B / total * 255;
+      R = R / total * 255;
+      G = G / total * 255;
+      B = B / total * 255;
       ctx.fillStyle = "rgba(" + R + "," + G + "," + B + ")";
       ctx.fillRect(i * thickness, 128, thickness - 1, -total / 5);
     }
   }
   // return last item of array
-  Array.prototype.latest = function () { return this[this.length - 1]; };
+  Array.prototype.latest = function () {
+    return this[this.length - 1];
+  };
 
   function graph(sensor) {
     var labels = Object.keys(NiclaSenseME[sensor].data);
@@ -991,17 +1053,21 @@ function downloadParticipantData() {
     labels.forEach(function (label) {
       values.push(NiclaSenseME[sensor].data[label]);
     });
-    Plotly.restyle(sensor, { y: values });
+    Plotly.restyle(sensor, {
+      y: values
+    });
   }
 
   function digit(sensor) {
     const value = NiclaSenseME[sensor].data[sensor].latest();
     const div = document.getElementById(sensor + "-value");
-    if (!Number.isNaN(value)) { div.innerHTML = Math.round(value * 10) / 10; };
+    if (!Number.isNaN(value)) {
+      div.innerHTML = Math.round(value * 10) / 10;
+    };
   }
 
   function update3d(sensor) {
-  
+
     // Get the quaternion values
     var x = NiclaSenseME['quaternion'].data.x.latest();
     var y = NiclaSenseME['quaternion'].data.y.latest();
@@ -1031,6 +1097,7 @@ function downloadParticipantData() {
   }
 
   var skip_frame = false;
+
   function draw() {
     function updateViz(sensor, fns) {
       if (NiclaSenseME[sensor].rendered == false) { // only render if new values are received
@@ -1041,7 +1108,7 @@ function downloadParticipantData() {
       }
     }
     if (skip_frame == false) { // TODO update with fuction to iterate object with viz function as a property
-      updateViz('accelerometer', [graph]);
+      updateViz('accelerometer', [graph, calculateTremorFrequency]);
       updateViz('gyroscope', [graph]);
       updateViz('temperature', [digit, graph]);
       updateViz('humidity', [digit, graph]);
@@ -1054,7 +1121,9 @@ function downloadParticipantData() {
       //bytes();  //Get the total amount of bytes received
 
       skip_frame = true; // render alternate frames = 30fps
-    } else { skip_frame = false; }
+    } else {
+      skip_frame = false;
+    }
     requestAnimationFrame(draw);
   }
 
@@ -1069,8 +1138,6 @@ function downloadParticipantData() {
   init3D();
   initGraph('Forcepad');
   requestAnimationFrame(draw);
-  
-
 </script>
 
 </html>
