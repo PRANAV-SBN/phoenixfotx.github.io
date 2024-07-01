@@ -940,7 +940,7 @@ function downloadParticipantData() {
         arduinoModel.add(ledObject);
         arduinoModel.add(ledLight);
 
-        arduinoModel.rotation.x = 45*(Math.PI/180);  // Show the bottom side of the board by default
+        arduinoModel.rotation.x = 90 * (Math.PI/180);  // Show the bottom side of the board by default
         arduinoModel.rotation.y = 90 * (Math.PI/180);  
         
         var sphereSize = 1;
@@ -957,7 +957,7 @@ function downloadParticipantData() {
         scene.add(hemiLight);
 
         // Camera
-        camera.position.set(0, 100, 130);
+        camera.position.set(0, 60, 80);
         camera.rotation.y = 90 * Math.PI; // 180
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         renderer.render(scene, camera);
@@ -1004,10 +1004,10 @@ function downloadParticipantData() {
   function update3d(sensor) {
   
     // Get the quaternion values
-    var x = NiclaSenseME['quaternion'].data.x.latest();
-    var y = NiclaSenseME['quaternion'].data.y.latest();
-    var z = NiclaSenseME['quaternion'].data.z.latest();
-    var w = NiclaSenseME['quaternion'].data.w.latest();
+    var y = NiclaSenseME['quaternion'].data.x.latest();
+    var x = NiclaSenseME['quaternion'].data.y.latest();
+    var w = NiclaSenseME['quaternion'].data.z.latest();
+    var z = NiclaSenseME['quaternion'].data.w.latest();
 
     // Construct the quaternion object with the values and apply that to the 3D model
     const quaternion = new THREE.Quaternion(x, y, z, w);
