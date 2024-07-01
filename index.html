@@ -319,6 +319,7 @@
       <div class="shortgraph" id="gas"></div>
     </div>
 
+
     <div class="widget">
       <form id="userDataForm">
         <label for="name">Name:</label>
@@ -917,7 +918,7 @@ function downloadParticipantData() {
 
     container.insertBefore(renderer.domElement, canvasDigits);
     renderer.domElement.style.margin = "9px";
-    loader.load('models/niclaSenseME.glb',
+    loader.load('models/gap_3.glb',
       // called when the Arduinio model is loaded
       function (gltf) {
         // Model
@@ -956,7 +957,7 @@ function downloadParticipantData() {
         scene.add(hemiLight);
 
         // Camera
-        camera.position.set(0, 25, 0);
+        camera.position.set(0, 160, 230);
         camera.rotation.y = 90 * Math.PI; // 180
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         renderer.render(scene, camera);
@@ -1053,7 +1054,7 @@ function downloadParticipantData() {
       updateViz('Forcepad', [graph]);
       //bytes();  //Get the total amount of bytes received
 
-      skip_frame = true; // render alternate frames = 30fps
+      skip_frame = true; // render alternate frames = 60fps
     } else { skip_frame = false; }
     requestAnimationFrame(draw);
   }
