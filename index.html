@@ -940,7 +940,7 @@ function downloadParticipantData() {
         arduinoModel.add(ledObject);
         arduinoModel.add(ledLight);
 
-        arduinoModel.rotation.x = (Math.PI/180);  // Show the bottom side of the board by default
+        arduinoModel.rotation.x = 45*(Math.PI/180);  // Show the bottom side of the board by default
         arduinoModel.rotation.y = 90 * (Math.PI/180);  
         
         var sphereSize = 1;
@@ -957,7 +957,7 @@ function downloadParticipantData() {
         scene.add(hemiLight);
 
         // Camera
-        camera.position.set(0, 160, 230);
+        camera.position.set(0, 100, 130);
         camera.rotation.y = 90 * Math.PI; // 180
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         renderer.render(scene, camera);
