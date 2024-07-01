@@ -958,8 +958,8 @@ function downloadParticipantData() {
 
         // Camera
         camera.position.set(0, 60, 80);
-        camera.rotation.y =  Math.PI; // 180
-        camera.lookAt(new THREE.Vector3(90, 0, 0));
+        camera.rotation.y = -90 * Math.PI; // 180
+        camera.lookAt(new THREE.Vector3(3, 70, 0));
         renderer.render(scene, camera);
       }
     );
