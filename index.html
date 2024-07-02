@@ -960,7 +960,7 @@ function downloadParticipantData() {
         camera.position.set(0, 100, 120);
         camera.rotation.y =  Math.PI; // 180
         camera.rotation.x =  Math.PI / 2; // 180
-        camera.rotation.z =  Math.PI / 2; // 180
+        camera.rotation.z =  -Math.PI / 2; // 180
         camera.lookAt(new THREE.Vector3(0, 0, 0));
         renderer.render(scene, camera);
       }
