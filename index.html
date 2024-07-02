@@ -957,7 +957,7 @@ function downloadParticipantData() {
         scene.add(hemiLight);
 
         // Camera
-        camera.position.set(0, 60, 80);
+        camera.position.set(0, 100, 120);
         camera.rotation.y = 90 * Math.PI; // 180
         camera.rotation.x =  Math.PI; // 180
         camera.rotation.z =  180*Math.PI; // 180
@@ -1007,9 +1007,9 @@ function downloadParticipantData() {
   
     // Get the quaternion values
     var y = NiclaSenseME['quaternion'].data.x.latest();
-    var x = NiclaSenseME['quaternion'].data.y.latest();
+    var w = NiclaSenseME['quaternion'].data.y.latest();
     var z = NiclaSenseME['quaternion'].data.z.latest();
-    var w = NiclaSenseME['quaternion'].data.w.latest();
+    var x = NiclaSenseME['quaternion'].data.w.latest();
 
     // Construct the quaternion object with the values and apply that to the 3D model
     const quaternion = new THREE.Quaternion(x, y, z, w);
